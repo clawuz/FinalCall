@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 export default function ExploreScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Kesfet</Text>
+      <Text style={styles.text}>Keşfet</Text>
     </View>
   );
 }

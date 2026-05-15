@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 export default function AwardsScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Odüller</Text>
+      <Text style={styles.text}>Ödüller</Text>
     </View>
   );
 }

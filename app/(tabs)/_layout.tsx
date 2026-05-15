@@ -1,8 +1,8 @@
 import { Tabs } from 'expo-router';
 
 const TABS = [
-  { name: 'index', title: 'Odüller', icon: '◈' },
-  { name: 'explore', title: 'Kesfet', icon: '⊞' },
+  { name: 'index', title: 'Ödüller', icon: '◈' },
+  { name: 'explore', title: 'Keşfet', icon: '⊞' },
   { name: 'tracking', title: 'Takip', icon: '★' },
   { name: 'news', title: 'Haberler', icon: '◉' },
   { name: 'settings', title: 'Ayarlar', icon: '◎' },
