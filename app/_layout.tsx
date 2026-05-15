@@ -25,7 +25,7 @@ export default function RootLayout() {
     SplashScreen.hideAsync();
     // Redirect to onboarding on first launch
     if (!hasOnboarded) {
-      router.replace('/onboarding');
+      router.replace('/onboarding' as never);
     }
   }, [loaded, hasOnboarded]);
 
