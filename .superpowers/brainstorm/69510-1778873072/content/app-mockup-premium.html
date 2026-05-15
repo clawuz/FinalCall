@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NotifAwards — Premium Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0B0906;
+  --parchment: #0F0D0A;
+  --surface: #161310;
+  --surface2: #1C1914;
+  --border: rgba(220,195,150,0.08);
+  --border-warm: rgba(220,195,150,0.14);
+  --gold: #C8A96E;
+  --gold2: #E2C98A;
+  --gold-glow: rgba(200,169,110,0.12);
+  --cream: #F0E8D8;
+  --cream-dim: rgba(240,232,216,0.4);
+  --cream-muted: rgba(240,232,216,0.18);
+  --red: #C94040;
+  --red-warm: #D4573A;
+}
+
+body {
+  background: #0A0806;
+  font-family: 'Syne', sans-serif;
+  color: var(--cream);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 80px;
+}
+
+/* ============ PHONE ============ */
+.phone {
+  width: 390px;
+  min-width: 390px;
+  background: var(--parchment);
+  border-radius: 50px;
+  border: 1px solid rgba(220,195,150,0.12);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 8px rgba(220,195,150,0.03),
+    0 60px 120px rgba(0,0,0,0.9),
+    inset 0 1px 0 rgba(220,195,150,0.1);
+  position: relative;
+}
+
+.dynamic-island {
+  width: 126px; height: 36px;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+  margin: 0 auto;
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 28px;
+  font-size: 10px;
+  color: var(--cream-muted);
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.3px;
+}
+
+/* -- App bar -- */
+.app-bar {
+  padding: 18px 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.wordmark-top {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.8;
+}
+.wordmark-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--cream);
+  line-height: 1;
+}
+.wordmark-main em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.bell-btn {
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-warm);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.bell-btn::after {
+  content: '2';
+  position: absolute;
+  top: -4px; right: -4px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 8px;
+  font-weight: 700;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace;
+}
+
+/* -- Divider -- */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px 0;
+}
+.ornament-line { flex: 1; height: 1px; background: var(--border); }
+.ornament-diamond {
+  width: 5px; height: 5px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  opacity: 0.6;
+}
+
+/* -- Filter chips -- */
+.filters {
+  display: flex;
+  gap: 6px;
+  padding: 12px 24px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-chip {
+  padding: 5px 14px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--cream-muted);
+  transition: all 0.2s;
+}
+.filter-chip.on {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+/* -- URGENT HERO -- */
+.urgent-hero {
+  margin: 16px 20px 0;
+  background: linear-gradient(135deg, var(--surface2) 0%, rgba(201,64,64,0.06) 100%);
+  border: 1px solid rgba(201,64,64,0.2);
+  border-radius: 4px;
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.urgent-hero::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 2px; height: 100%;
+  background: var(--red-warm);
+}
+.urgent-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--red-warm);
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 6px;
+}
+.urgent-award-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--cream);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.urgent-countdown-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.urgent-big-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--red-warm);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.urgent-unit {
+  font-size: 13px;
+  color: rgba(212,87,58,0.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* -- Awards list -- */
+.list-label {
+  padding: 20px 24px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.list-label-text {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--cream-muted);
+  font-family: 'Space Mono', monospace;
+}
+.list-label-action {
+  font-size: 9px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+/* Award row — editorial layout */
+.award-row {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+.award-row:hover { background: rgba(200,169,110,0.03); }
+.award-row:last-child { border-bottom: 1px solid var(--border); }
+
+.award-row-left {
+  padding: 14px 16px 14px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ar-region {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cream-muted);
+  font-family: 'Space Mono', monospace;
+}
+.ar-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--cream);
+  line-height: 1.1;
+}
+.ar-cats {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+.ar-cat {
+  font-size: 8px;
+  color: var(--cream-muted);
+  letter-spacing: 0.5px;
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.award-row-right {
+  padding: 14px 20px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 80px;
+  gap: 2px;
+}
+.ar-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold2);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.ar-unit {
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cream-muted);
+}
+
+/* -- Notif toggle indicator -- */
+.notif-dot {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--border-warm);
+  transition: background 0.2s;
+}
+.award-row.tracking .notif-dot { background: var(--gold); }
+
+/* -- Bottom nav -- */
+.bnav {
+  display: flex;
+  justify-content: space-around;
+  padding: 14px 20px 16px;
+  border-top: 1px solid var(--border);
+  background: rgba(11,9,6,0.98);
+}
+.bnav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.bnav-icon {
+  font-size: 16px;
+  opacity: 0.25;
+}
+.bnav-icon.on { opacity: 1; }
+.bnav-text { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cream-muted); }
+.bnav-text.on { color: var(--gold); }
+
+
+/* ============ RIGHT PANEL ============ */
+.panel {
+  flex: 1;
+  max-width: 480px;
+  padding-top: 16px;
+}
+.panel h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+.panel h1 em { font-style: italic; color: var(--gold); }
+.panel-sub {
+  font-size: 14px;
+  color: var(--cream-dim);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  max-width: 380px;
+}
+
+.decisions { display: flex; flex-direction: column; gap: 0; }
+.decision {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.decision:first-child { border-top: 1px solid var(--border); }
+.d-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  opacity: 0.6;
+  min-width: 24px;
+  padding-top: 2px;
+}
+.d-body h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 5px;
+  letter-spacing: -0.2px;
+}
+.d-body p {
+  font-size: 12px;
+  color: var(--cream-dim);
+  line-height: 1.6;
+}
+
+.verdict {
+  margin-top: 28px;
+  padding: 20px;
+  background: var(--gold-glow);
+  border: 1px solid var(--border-warm);
+  border-radius: 4px;
+  display: flex;
+  gap: 14px;
+}
+.verdict-diamond {
+  width: 8px; height: 8px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.verdict p {
+  font-size: 12px;
+  color: var(--cream-dim);
+  line-height: 1.7;
+}
+.verdict p strong { color: var(--gold); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- PHONE -->
+<div class="phone">
+  <div class="dynamic-island"></div>
+  <div class="status">
+    <span>09:41</span>
+    <span>5G ▮▮▮</span>
+  </div>
+
+  <div class="app-bar">
+    <div class="wordmark">
+      <div class="wordmark-top">the</div>
+      <div class="wordmark-main">Notif<em>Awards</em></div>
+    </div>
+    <div class="bell-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(240,232,216,0.6)" stroke-width="1.5">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-diamond"></div>
+    <div class="ornament-line"></div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-chip on">Tümü</div>
+    <div class="filter-chip">Türkiye</div>
+    <div class="filter-chip">Global</div>
+    <div class="filter-chip">Takipte</div>
+    <div class="filter-chip">Dijital</div>
+  </div>
+
+  <!-- Urgent hero -->
+  <div class="urgent-hero">
+    <div class="urgent-label">● Son Saatler</div>
+    <div class="urgent-award-name">Effie Awards<br>Türkiye 2025</div>
+    <div class="urgent-countdown-row">
+      <div class="urgent-big-num">06</div>
+      <div class="urgent-unit">saat<br>kaldı</div>
+    </div>
+  </div>
+
+  <div class="list-label">
+    <div class="list-label-text">Yaklaşan Tarihler</div>
+    <div class="list-label-action">Tümünü gör →</div>
+  </div>
+
+  <div class="award-row tracking">
+    <div class="award-row-left">
+      <div class="ar-region">🌍 Global</div>
+      <div class="ar-name">Cannes Lions</div>
+      <div class="ar-cats">
+        <span class="ar-cat">Film</span>
+        <span class="ar-cat">OOH</span>
+        <span class="ar-cat">Craft</span>
+      </div>
+    </div>
+    <div class="award-row-right">
+      <div class="ar-num">14</div>
+      <div class="ar-unit">gün</div>
+    </div>
+    <div class="notif-dot"></div>
+  </div>
+
+  <div class="award-row">
+    <div class="award-row-left">
+      <div class="ar-region">🌍 Global</div>
+      <div class="ar-name">D&AD Awards</div>
+      <div class="ar-cats">
+        <span class="ar-cat">Tasarım</span>
+        <span class="ar-cat">Yazı</span>
+      </div>
+    </div>
+    <div class="award-row-right">
+      <div class="ar-num">31</div>
+      <div class="ar-unit">gün</div>
+    </div>
+    <div class="notif-dot"></div>
+  </div>
+
+  <div class="award-row tracking">
+    <div class="award-row-left">
+      <div class="ar-region">🇹🇷 Türkiye</div>
+      <div class="ar-name">Crystal Apple</div>
+      <div class="ar-cats">
+        <span class="ar-cat">Reklam</span>
+        <span class="ar-cat">PR</span>
+      </div>
+    </div>
+    <div class="award-row-right">
+      <div class="ar-num">47</div>
+      <div class="ar-unit">gün</div>
+    </div>
+    <div class="notif-dot"></div>
+  </div>
+
+  <div class="award-row">
+    <div class="award-row-left">
+      <div class="ar-region">🌍 Global</div>
+      <div class="ar-name">Clio Awards</div>
+      <div class="ar-cats">
+        <span class="ar-cat">Film</span>
+        <span class="ar-cat">Dijital</span>
+      </div>
+    </div>
+    <div class="award-row-right">
+      <div class="ar-num">58</div>
+      <div class="ar-unit">gün</div>
+    </div>
+    <div class="notif-dot"></div>
+  </div>
+
+  <div class="bnav">
+    <div class="bnav-item">
+      <div class="bnav-icon on">◈</div>
+      <div class="bnav-text on">Ödüller</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">♡</div>
+      <div class="bnav-text">Takip</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">⊞</div>
+      <div class="bnav-text">Kategoriler</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">◎</div>
+      <div class="bnav-text">Ayarlar</div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="panel">
+  <h1>Premium<br><em>Redesign</em></h1>
+  <p class="panel-sub">Cormorant Garamond serif + Space Mono monospace. Warm dark — siyah değil, mürekkep kahvesi. Editoryal grid, nefes alan boşluklar.</p>
+
+  <div class="decisions">
+    <div class="decision">
+      <div class="d-num">01</div>
+      <div class="d-body">
+        <h4>Sıcak mürekkep tonu</h4>
+        <p>#0B0906 — soğuk siyah değil, sıcak kahve-siyah. Deri ciltli bir ödül kataloğu gibi hissettiriyor.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">02</div>
+      <div class="d-body">
+        <h4>Serif wordmark</h4>
+        <p>"the NotifAwards" — küçük italic "the" üstte, büyük Cormorant Garamond altta. Prestige yayın estetigi.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">03</div>
+      <div class="d-body">
+        <h4>Urgent hero alan</h4>
+        <p>Son günlerde en kritik ödül büyük rakamla hero olarak gösterilir. 48px Space Mono, kırmızı-turuncu aksan.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">04</div>
+      <div class="d-body">
+        <h4>Editoryal liste düzeni</h4>
+        <p>Kartlar değil — liste satırları. Sağdaki rakam büyük ve belirgin. Sağ kenarda ince altın çizgi "takipte" göstergesi.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">05</div>
+      <div class="d-body">
+        <h4>Ornament çizgisi</h4>
+        <p>Başlık ile içerik arasında küçük elmas + çizgi. Luxury marka kimliğine işaret ediyor, generic mobile UI'dan ayrışıyor.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-diamond"></div>
+    <p>Bu tasarım <strong>Financial Times, Wallpaper*</strong> gibi premium editoryal yayınlardan ilham alıyor. Marketing ödülleri de zaten prestijli sektör; uygulama o havayı yansıtmalı. <strong>Farklı mı?</strong> Onaylarsanız ilerleriz, değiştirmek istediğiniz bir şey varsa söyleyin.</p>
+  </div>
+</div>
+
+</body>
+</html>

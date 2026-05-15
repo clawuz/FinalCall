@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NotifAwards — Poster Alt</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #F5F2ED;
+  --off: #EDEAE4;
+  --ink: #0E0E0E;
+  --ink2: #1C1C1C;
+  --mid: #8C8880;
+  --dim: #C2BDB5;
+  --red: #E03020;
+  --red-dark: #B82010;
+  --yellow: #F5C842;
+  --border: rgba(14,14,14,0.10);
+  --border-strong: rgba(14,14,14,0.18);
+}
+
+body {
+  background: #E8E4DE;
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 72px;
+}
+
+/* ============ PHONE ============ */
+.phone {
+  width: 390px;
+  min-width: 390px;
+  background: var(--white);
+  border-radius: 50px;
+  border: 1px solid rgba(14,14,14,0.15);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 8px rgba(14,14,14,0.04),
+    0 60px 100px rgba(0,0,0,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.dyn-island {
+  width: 126px; height: 36px;
+  background: var(--ink);
+  border-radius: 0 0 20px 20px;
+  margin: 0 auto;
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 28px;
+  font-size: 10px;
+  color: var(--mid);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ---- Header ---- */
+.app-header {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 2px solid var(--ink);
+}
+
+.header-left {
+  flex: 1;
+  padding: 14px 18px;
+  border-right: 1px solid var(--border-strong);
+}
+
+.app-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+  color: var(--ink);
+  line-height: 1;
+}
+.app-name span { color: var(--red); }
+.app-tagline {
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: var(--mid);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.header-right {
+  width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  position: relative;
+}
+.notif-count {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  color: var(--red);
+  line-height: 1;
+}
+.notif-sublabel {
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ---- Filter row ---- */
+.filter-row {
+  display: flex;
+  border-bottom: 1px solid var(--border-strong);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.fchip {
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: all 0.15s;
+}
+.fchip.on {
+  background: var(--ink);
+  color: var(--white);
+}
+
+/* ---- URGENT BLOCK ---- */
+.urgent-block {
+  background: var(--red);
+  padding: 16px 20px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid var(--red-dark);
+}
+.ub-left { flex: 1; }
+.ub-flag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(245,242,237,0.6);
+  margin-bottom: 4px;
+}
+.ub-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+.ub-sub {
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(245,242,237,0.65);
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+.ub-right { text-align: right; }
+.ub-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  color: var(--white);
+  line-height: 0.85;
+  letter-spacing: -2px;
+}
+.ub-unit {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245,242,237,0.6);
+}
+
+/* ---- Section label ---- */
+.section-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sl-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+.sl-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--dim);
+}
+
+/* ---- Award rows ---- */
+.award-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.12s;
+}
+.award-row:hover { background: var(--off); }
+
+.ar-num-col {
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+  border-right: 1px solid var(--border-strong);
+  flex-shrink: 0;
+}
+.ar-big-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40px;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.ar-big-num.tracked { color: var(--red); }
+.ar-small-unit {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-top: 1px;
+}
+
+.ar-body {
+  flex: 1;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+.ar-region {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+.ar-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.05;
+  letter-spacing: 0.2px;
+}
+.ar-cats {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+.ar-cat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--mid);
+  border: 1px solid var(--border-strong);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.ar-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px 0 8px;
+  gap: 6px;
+}
+.track-btn {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  color: var(--mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.track-btn.on {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--ink);
+}
+
+/* ---- Bottom nav ---- */
+.bnav {
+  display: flex;
+  border-top: 2px solid var(--ink);
+}
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0 12px;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+}
+.bnav-item:last-child { border-right: none; }
+.bnav-icon { font-size: 15px; opacity: 0.25; }
+.bnav-icon.on {
+  opacity: 1;
+  color: var(--red);
+}
+.bnav-lbl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-top: 4px;
+}
+.bnav-lbl.on { color: var(--red); font-weight: 700; }
+
+
+/* ============ PANEL ============ */
+.panel {
+  flex: 1;
+  max-width: 460px;
+  padding-top: 16px;
+}
+.panel h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  letter-spacing: 1px;
+  color: var(--ink);
+  line-height: 0.9;
+  margin-bottom: 16px;
+}
+.panel h1 span { color: var(--red); }
+.panel-desc {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
+
+.decisions {
+  display: flex;
+  flex-direction: column;
+}
+.decision {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-strong);
+  align-items: start;
+}
+.decision:first-child { border-top: 1px solid var(--border-strong); }
+.d-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--red);
+  line-height: 1;
+  opacity: 0.5;
+}
+.d-body h4 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--ink2);
+  margin-bottom: 5px;
+}
+.d-body p {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.comparison {
+  margin-top: 28px;
+  display: flex;
+  gap: 12px;
+}
+.comp-card {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+}
+.comp-card h5 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 6px;
+}
+.comp-card p {
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.5;
+  font-style: italic;
+}
+.comp-card.highlight {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.comp-card.highlight h5 { color: var(--red); }
+.comp-card.highlight p { color: rgba(245,242,237,0.6); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="status">
+    <span>09:41</span>
+    <span>5G ▮▮▮</span>
+  </div>
+
+  <!-- Header -->
+  <div class="app-header">
+    <div class="header-left">
+      <div class="app-name">NOTIF<span>AWARDS</span></div>
+      <div class="app-tagline">marketing ödülleri takip platformu</div>
+    </div>
+    <div class="header-right">
+      <div class="notif-count">3</div>
+      <div class="notif-sublabel">BİLDİRİM</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row">
+    <div class="fchip on">TÜMÜ</div>
+    <div class="fchip">TÜRKİYE</div>
+    <div class="fchip">GLOBAL</div>
+    <div class="fchip">TAKİP</div>
+  </div>
+
+  <!-- Urgent -->
+  <div class="urgent-block">
+    <div class="ub-left">
+      <div class="ub-flag">● Acil — Son Saatler</div>
+      <div class="ub-name">EFFIE AWARDS<br>TÜRKİYE</div>
+      <div class="ub-sub">Son başvuru · 15 Mayıs 2025</div>
+    </div>
+    <div class="ub-right">
+      <div class="ub-num">06</div>
+      <div class="ub-unit">SAAT</div>
+    </div>
+  </div>
+
+  <!-- Section header -->
+  <div class="section-row">
+    <div class="sl-label">Yaklaşan Tarihler</div>
+    <div class="sl-count">12 ödül</div>
+  </div>
+
+  <!-- Rows -->
+  <div class="award-row">
+    <div class="ar-num-col">
+      <div class="ar-big-num tracked">14</div>
+      <div class="ar-small-unit">GÜN</div>
+    </div>
+    <div class="ar-body">
+      <div class="ar-region">🌍 Global</div>
+      <div class="ar-name">Cannes Lions</div>
+      <div class="ar-cats">
+        <span class="ar-cat">FILM</span>
+        <span class="ar-cat">OOH</span>
+        <span class="ar-cat">CRAFT</span>
+      </div>
+    </div>
+    <div class="ar-right">
+      <div class="track-btn on">★</div>
+    </div>
+  </div>
+
+  <div class="award-row">
+    <div class="ar-num-col">
+      <div class="ar-big-num">31</div>
+      <div class="ar-small-unit">GÜN</div>
+    </div>
+    <div class="ar-body">
+      <div class="ar-region">🌍 Global</div>
+      <div class="ar-name">D&AD Awards</div>
+      <div class="ar-cats">
+        <span class="ar-cat">TASARIM</span>
+        <span class="ar-cat">YAZI</span>
+      </div>
+    </div>
+    <div class="ar-right">
+      <div class="track-btn">☆</div>
+    </div>
+  </div>
+
+  <div class="award-row">
+    <div class="ar-num-col">
+      <div class="ar-big-num tracked">47</div>
+      <div class="ar-small-unit">GÜN</div>
+    </div>
+    <div class="ar-body">
+      <div class="ar-region">🇹🇷 Türkiye</div>
+      <div class="ar-name">Crystal Apple</div>
+      <div class="ar-cats">
+        <span class="ar-cat">REKLAM</span>
+        <span class="ar-cat">PR</span>
+      </div>
+    </div>
+    <div class="ar-right">
+      <div class="track-btn on">★</div>
+    </div>
+  </div>
+
+  <div class="award-row">
+    <div class="ar-num-col">
+      <div class="ar-big-num">58</div>
+      <div class="ar-small-unit">GÜN</div>
+    </div>
+    <div class="ar-body">
+      <div class="ar-region">🌍 Global</div>
+      <div class="ar-name">Clio Awards</div>
+      <div class="ar-cats">
+        <span class="ar-cat">FİLM</span>
+        <span class="ar-cat">DİJİTAL</span>
+      </div>
+    </div>
+    <div class="ar-right">
+      <div class="track-btn">☆</div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bnav">
+    <div class="bnav-item">
+      <div class="bnav-icon on">◈</div>
+      <div class="bnav-lbl on">ÖDÜLLER</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">★</div>
+      <div class="bnav-lbl">TAKİP</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">⊞</div>
+      <div class="bnav-lbl">KATEGORİ</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">◎</div>
+      <div class="bnav-lbl">AYARLAR</div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="panel">
+  <h1>POSTER<br><span>GRID</span><br>ALT.</h1>
+  <p class="panel-desc">Bebas Neue + Barlow Condensed + IBM Plex Mono. Açık zemin, kırmızı/sarı aksan. Swiss International Style — bold, grid-disiplinli, poster hissiyatı.</p>
+
+  <div class="decisions">
+    <div class="decision">
+      <div class="d-num">1</div>
+      <div class="d-body">
+        <h4>Açık zemin — radikal kontrast</h4>
+        <p>Önceki tasarımdan tam zıt. Off-white (#F5F2ED) — soğuk beyaz değil, krem. Güçlü bir grafik güven ifadesi.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">2</div>
+      <div class="d-body">
+        <h4>Bebas Neue — display font</h4>
+        <p>Condensed, bold, büyük harf. Her büyük rakam ve başlık Bebas Neue. Poster tasarım estetiği, modern spor markası enerjisi.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">3</div>
+      <div class="d-body">
+        <h4>Kırmızı urgent hero</h4>
+        <p>Acil durum tam kırmızı blok içinde. 72px Bebas Neue rakam. Görmezden gelinmez, kaçınılmaz dikkat çekici.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">4</div>
+      <div class="d-body">
+        <h4>Sol kolon — rakam odaklı</h4>
+        <p>Her satırda sol kolonda büyük gün sayısı. Takip edilen ödüllerde kırmızı renk. Sağda sarı yıldız toggle.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-num">5</div>
+      <div class="d-body">
+        <h4>Grid çizgileri as structure</h4>
+        <p>Sınırlar dekorasyon değil, yapı. Header'da 2px ink border. Her satır net ayrışıyor. Typographic hierarchy güçlü.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="comparison">
+    <div class="comp-card">
+      <h5>Premium Dark (Önceki)</h5>
+      <p>Cormorant Garamond, warm dark ink, editoryal serif. FT / Wallpaper* hissi. Gece kullanımı doğal.</p>
+    </div>
+    <div class="comp-card highlight">
+      <h5>Poster Grid (Bu)</h5>
+      <p>Bebas Neue, açık zemin, Swiss grid. Ajans duvarı / design conf. identity hissi. Güneş altında okunabilir.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

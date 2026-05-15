@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(timeout 15 bun expo start --no-dev --platform ios)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)",
+      "Bash(/Users/okilavuz/.bun/bin/bunx tsc *)"
+    ]
+  }
+}

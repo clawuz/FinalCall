@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Awards — herkese okuma, sadece admin yazma
+    match /awards/{awardId} {
+      allow read: if true;
+      allow write: if false; // Admin SDK ile yazılacak
+    }
+
+    // Articles — herkese okuma
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // User preferences — cihaz token bazlı
+    match /user_prefs/{deviceToken} {
+      allow read, write: if true; // Anonim, token bazlı
+    }
+
+    // Notification log — sadece okunabilir
+    match /notification_log/{logId} {
+      allow read: if false;
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NotifAwards — Ana Ekran Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080808;
+    --surface: #111111;
+    --surface2: #181818;
+    --border: rgba(255,255,255,0.06);
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.15);
+    --gold-bright: #E8C97A;
+    --red-accent: #E04040;
+    --text: #F0EDE6;
+    --text-dim: rgba(240,237,230,0.45);
+    --text-muted: rgba(240,237,230,0.25);
+    --green: #4CAF78;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+  }
+
+  .page-wrapper {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* ---- Phone frame ---- */
+  .phone-frame {
+    width: 375px;
+    min-width: 375px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    overflow: hidden;
+    box-shadow:
+      0 0 0 6px rgba(255,255,255,0.04),
+      0 40px 80px rgba(0,0,0,0.8),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    position: relative;
+  }
+
+  .notch {
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .notch-cam { width: 10px; height: 10px; background: #1a1a1a; border-radius: 50%; border: 1px solid #2a2a2a; }
+
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 24px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .screen { padding: 0 0 32px; }
+
+  /* ---- Header ---- */
+  .app-header {
+    padding: 20px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .app-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .app-logo span { color: var(--gold); }
+  .header-date {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .notif-badge {
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    cursor: pointer;
+  }
+  .notif-badge::after {
+    content: '3';
+    position: absolute;
+    top: -5px; right: -5px;
+    background: var(--gold);
+    color: #000;
+    font-size: 9px;
+    font-weight: 700;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ---- Tabs ---- */
+  .tabs {
+    display: flex;
+    padding: 16px 20px 0;
+    gap: 4px;
+  }
+  .tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.25);
+  }
+
+  /* ---- Urgent banner ---- */
+  .urgent-banner {
+    margin: 14px 16px 0;
+    background: linear-gradient(135deg, rgba(224,64,64,0.12), rgba(224,64,64,0.04));
+    border: 1px solid rgba(224,64,64,0.2);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .urgent-dot {
+    width: 8px; height: 8px;
+    background: var(--red-accent);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .urgent-text { font-size: 11.5px; color: rgba(240,237,230,0.75); line-height: 1.4; }
+  .urgent-text strong { color: var(--red-accent); font-weight: 600; }
+
+  /* ---- Section title ---- */
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 18px 20px 10px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ---- Award cards ---- */
+  .award-card {
+    margin: 0 16px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .award-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--gold);
+    border-radius: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .award-card:hover::before { opacity: 1; }
+  .award-card:hover { border-color: rgba(201,168,76,0.2); background: var(--surface2); }
+
+  .award-card.urgent {
+    border-color: rgba(224,64,64,0.2);
+    background: rgba(224,64,64,0.04);
+  }
+  .award-card.urgent::before { background: var(--red-accent); opacity: 1; }
+
+  .award-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .award-meta { display: flex; flex-direction: column; gap: 4px; }
+  .award-region {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .award-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+
+  .countdown-badge {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .countdown-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--gold-bright);
+    line-height: 1;
+  }
+  .countdown-num.urgent-num { color: var(--red-accent); }
+  .countdown-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  .award-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .award-cats { display: flex; gap: 5px; flex-wrap: wrap; }
+  .cat-tag {
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+  .award-date {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .progress-bar {
+    height: 2px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 1px;
+    margin: 10px 0 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 1px;
+    transition: width 0.5s ease;
+  }
+  .progress-fill.urgent-fill { background: var(--red-accent); }
+
+  /* ---- Bottom nav ---- */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 20px 8px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    background: rgba(8,8,8,0.95);
+    backdrop-filter: blur(20px);
+  }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .nav-icon { font-size: 18px; opacity: 0.35; }
+  .nav-icon.active { opacity: 1; filter: drop-shadow(0 0 4px var(--gold)); }
+  .nav-label { font-size: 9px; color: var(--text-muted); letter-spacing: 0.3px; }
+  .nav-label.active { color: var(--gold); }
+
+  /* ---- Right panel ---- */
+  .right-panel {
+    flex: 1;
+    padding-top: 20px;
+  }
+  .panel-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .panel-sub {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  .feature-list { display: flex; flex-direction: column; gap: 16px; }
+  .feature-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .feature-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .feature-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .feature-body p {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .design-note {
+    margin-top: 28px;
+    padding: 16px;
+    background: var(--gold-dim);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+  }
+  .design-note h4 {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 8px;
+  }
+  .design-note p {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Phone mockup -->
+  <div class="phone-frame">
+    <div class="notch"><div class="notch-cam"></div></div>
+    <div class="status-bar">
+      <span>09:41</span>
+      <span>●●● 5G ▮▮▮</span>
+    </div>
+
+    <div class="screen">
+      <div class="app-header">
+        <div>
+          <div class="app-logo">Notif<span>Awards</span></div>
+          <div class="header-date">15 Mayıs 2025, Perşembe</div>
+        </div>
+        <div class="notif-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">Tümü</div>
+        <div class="tab">Türkiye</div>
+        <div class="tab">Global</div>
+        <div class="tab">Takip</div>
+      </div>
+
+      <div class="urgent-banner">
+        <div class="urgent-dot"></div>
+        <div class="urgent-text">
+          <strong>Effie Türkiye</strong> başvuruları için son <strong>6 saat</strong> kaldı!
+        </div>
+      </div>
+
+      <div class="section-title">Yaklaşan Son Tarihler</div>
+
+      <!-- Card 1 - urgent -->
+      <div class="award-card urgent">
+        <div class="award-top">
+          <div class="award-meta">
+            <div class="award-region">🇹🇷 Türkiye</div>
+            <div class="award-name">Effie Awards</div>
+          </div>
+          <div class="countdown-badge">
+            <div class="countdown-num urgent-num">6s</div>
+            <div class="countdown-label">SAAT KALDI</div>
+          </div>
+        </div>
+        <div class="award-bottom">
+          <div class="award-cats">
+            <span class="cat-tag">Marka</span>
+            <span class="cat-tag">Dijital</span>
+          </div>
+          <div class="award-date">15 May 23:59</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill urgent-fill" style="width:96%"></div></div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="award-card">
+        <div class="award-top">
+          <div class="award-meta">
+            <div class="award-region">🌍 Global</div>
+            <div class="award-name">Cannes Lions</div>
+          </div>
+          <div class="countdown-badge">
+            <div class="countdown-num">14</div>
+            <div class="countdown-label">GÜN KALDI</div>
+          </div>
+        </div>
+        <div class="award-bottom">
+          <div class="award-cats">
+            <span class="cat-tag">Film</span>
+            <span class="cat-tag">OOH</span>
+            <span class="cat-tag">Craft</span>
+          </div>
+          <div class="award-date">29 May 2025</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="award-card">
+        <div class="award-top">
+          <div class="award-meta">
+            <div class="award-region">🌍 Global</div>
+            <div class="award-name">D&AD Awards</div>
+          </div>
+          <div class="countdown-badge">
+            <div class="countdown-num">31</div>
+            <div class="countdown-label">GÜN KALDI</div>
+          </div>
+        </div>
+        <div class="award-bottom">
+          <div class="award-cats">
+            <span class="cat-tag">Tasarım</span>
+            <span class="cat-tag">Yazı</span>
+          </div>
+          <div class="award-date">15 Haz 2025</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="award-card">
+        <div class="award-top">
+          <div class="award-meta">
+            <div class="award-region">🇹🇷 Türkiye</div>
+            <div class="award-name">Crystal Apple</div>
+          </div>
+          <div class="countdown-badge">
+            <div class="countdown-num">47</div>
+            <div class="countdown-label">GÜN KALDI</div>
+          </div>
+        </div>
+        <div class="award-bottom">
+          <div class="award-cats">
+            <span class="cat-tag">Reklam</span>
+            <span class="cat-tag">PR</span>
+          </div>
+          <div class="award-date">01 Tem 2025</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <div class="nav-icon active">◈</div>
+          <div class="nav-label active">Ödüller</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">♡</div>
+          <div class="nav-label">Takip</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">⊞</div>
+          <div class="nav-label">Kategoriler</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">◎</div>
+          <div class="nav-label">Ayarlar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right panel -->
+  <div class="right-panel">
+    <div class="panel-title">Ana Ekran Tasarımı</div>
+    <div class="panel-sub">Koyu lüks estetik — marketing profesyonelleri için prestige hissiyat. Playfair Display başlıklar, DM Mono geri sayım rakamları.</div>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🔴</div>
+        <div class="feature-body">
+          <h4>Son 24 saat uyarı banner</h4>
+          <p>Kırmızı pulse animasyonu ile urgent durum. Ekranın üstünde sabit, göz ardı edilemez.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔢</div>
+        <div class="feature-body">
+          <h4>Dramatik geri sayım rakamı</h4>
+          <p>DM Mono font, büyük ve belirgin. Gün/saat/dakika otomatik değişimi. Altın rengi → kırmızı urgency geçişi.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-body">
+          <h4>Progress bar</h4>
+          <p>Her kartın altında başvuru sürecinin yüzdesi. Görsel olarak "ne kadar kaldı" hissi verir.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🏷️</div>
+        <div class="feature-body">
+          <h4>Kategori etiketleri</h4>
+          <p>Film, Dijital, PR, OOH — her ödülün kategorileri. Filtrelenebilir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="design-note">
+      <h4>Tasarım Kararı</h4>
+      <p>Sol kenar çizgisi (3px altın/kırmızı) urgency durumunu anında iletir. Hover'da ortaya çıkar, urgent kartlarda her zaman görünür. Progress bar ile renk sistemi tutarlı.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

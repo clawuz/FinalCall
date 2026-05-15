@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NotifAwards — Aurora</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #07070C;
+  --glass: rgba(255,255,255,0.045);
+  --glass2: rgba(255,255,255,0.07);
+  --glass-border: rgba(255,255,255,0.09);
+  --glass-border2: rgba(255,255,255,0.13);
+  --white: #FAFAFA;
+  --dim: rgba(250,250,250,0.45);
+  --muted: rgba(250,250,250,0.22);
+  --amber: #FFB347;
+  --amber-glow: rgba(255,140,60,0.18);
+  --violet: #B47AFF;
+  --violet-glow: rgba(160,100,255,0.14);
+  --teal: #4DCDBE;
+  --teal-glow: rgba(60,200,180,0.12);
+  --red: #FF5A5A;
+  --red-glow: rgba(255,80,80,0.15);
+}
+
+body {
+  background: var(--bg);
+  font-family: 'Outfit', sans-serif;
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 80px;
+  /* Grain */
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ============ PHONE ============ */
+.phone {
+  width: 390px;
+  min-width: 390px;
+  background: var(--bg);
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 7px rgba(255,255,255,0.025),
+    0 60px 120px rgba(0,0,0,0.95),
+    0 0 80px rgba(180,122,255,0.06);
+  position: relative;
+  z-index: 1;
+}
+
+/* Aurora glow orbs inside phone */
+.phone-aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 50px;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+.orb-1 {
+  width: 200px; height: 200px;
+  top: -60px; left: -40px;
+  background: rgba(180,120,255,0.2);
+}
+.orb-2 {
+  width: 180px; height: 180px;
+  top: 100px; right: -60px;
+  background: rgba(255,140,50,0.15);
+}
+.orb-3 {
+  width: 160px; height: 160px;
+  bottom: 200px; left: 20px;
+  background: rgba(60,200,180,0.1);
+}
+
+.dyn-island {
+  width: 126px; height: 36px;
+  background: #000;
+  border-radius: 0 0 22px 22px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 28px;
+  font-size: 10px;
+  color: var(--muted);
+  font-family: 'Fira Code', monospace;
+  position: relative;
+  z-index: 2;
+}
+
+/* ---- App bar ---- */
+.app-bar {
+  padding: 16px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wm-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--violet), var(--amber));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(180,122,255,0.35);
+}
+.wm-text {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--white);
+}
+.wm-text span { color: var(--violet); }
+
+.bar-actions { display: flex; gap: 8px; align-items: center; }
+.bar-btn {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(12px);
+  position: relative;
+  cursor: pointer;
+  font-size: 13px;
+}
+.bar-btn .badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  background: var(--red);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fira Code', monospace;
+  box-shadow: 0 2px 8px rgba(255,80,80,0.5);
+}
+
+/* ---- Greeting ---- */
+.greeting {
+  padding: 16px 20px 0;
+  position: relative;
+  z-index: 2;
+}
+.greeting-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+  margin-bottom: 2px;
+}
+.greeting-main {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.greeting-main em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--violet), var(--amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---- Bento grid ---- */
+.bento {
+  padding: 14px 16px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Urgent — spans full width */
+.bento-urgent {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg,
+    rgba(255,80,80,0.12) 0%,
+    rgba(255,140,50,0.08) 100%);
+  border: 1px solid rgba(255,80,80,0.22);
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+.bento-urgent::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: rgba(255,80,80,0.12);
+  border-radius: 50%;
+  filter: blur(30px);
+}
+.bu-left { flex: 1; }
+.bu-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,80,80,0.15);
+  border: 1px solid rgba(255,80,80,0.25);
+  border-radius: 20px;
+  padding: 2px 8px 2px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--red);
+  letter-spacing: 0.5px;
+  margin-bottom: 7px;
+}
+.bu-pulse {
+  width: 6px; height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); box-shadow:0 0 0 0 rgba(255,80,80,0.4); }
+  50% { opacity:.7; transform:scale(.85); box-shadow:0 0 0 5px rgba(255,80,80,0); }
+}
+.bu-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  line-height: 1.15;
+}
+.bu-date { font-size: 11px; color: var(--dim); margin-top: 3px; }
+.bu-right { text-align: right; }
+.bu-num {
+  font-family: 'Fira Code', monospace;
+  font-size: 44px;
+  font-weight: 700;
+  color: var(--red);
+  line-height: 1;
+  letter-spacing: -2px;
+  text-shadow: 0 0 30px rgba(255,80,80,0.4);
+}
+.bu-unit { font-size: 10px; color: var(--dim); letter-spacing: 1px; margin-top: 1px; }
+
+/* Bento card default */
+.bento-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 14px 14px 12px;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.bento-card:hover {
+  border-color: var(--glass-border2);
+  background: var(--glass2);
+}
+
+.bc-region {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.bc-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+.bc-num-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.bc-num {
+  font-family: 'Fira Code', monospace;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+.bc-unit {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--dim);
+  letter-spacing: 0.5px;
+}
+
+/* Accent per card */
+.bc-accent-violet .bc-num { color: var(--violet); text-shadow: 0 0 20px rgba(180,122,255,0.3); }
+.bc-accent-teal .bc-num { color: var(--teal); text-shadow: 0 0 20px rgba(60,200,180,0.25); }
+.bc-accent-amber .bc-num { color: var(--amber); text-shadow: 0 0 20px rgba(255,180,70,0.25); }
+.bc-accent-violet .bc-glow { position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;background:rgba(180,122,255,0.1);border-radius:50%;filter:blur(25px); }
+.bc-accent-teal .bc-glow { position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;background:rgba(60,200,180,0.1);border-radius:50%;filter:blur(25px); }
+.bc-accent-amber .bc-glow { position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;background:rgba(255,180,70,0.1);border-radius:50%;filter:blur(25px); }
+
+.bc-cats {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.bc-cat {
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 2px 6px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+.bc-track {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+}
+.bc-track.on {
+  background: rgba(255,180,70,0.15);
+  border-color: rgba(255,180,70,0.3);
+  color: var(--amber);
+}
+
+/* Wide card — spans full width */
+.bento-wide {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 14px 18px;
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.bento-wide:hover { border-color: var(--glass-border2); }
+.bw-left { flex: 1; }
+.bw-region { font-size: 9px; color: var(--muted); margin-bottom: 3px; }
+.bw-name { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; }
+.bw-cats { display: flex; gap: 4px; margin-top: 5px; }
+.bw-cat { font-size: 8px; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); padding: 2px 6px; border-radius: 20px; }
+.bw-right { text-align: right; }
+.bw-num { font-family: 'Fira Code', monospace; font-size: 32px; font-weight: 700; color: var(--amber); line-height: 1; letter-spacing: -1px; text-shadow: 0 0 20px rgba(255,180,70,0.3); }
+.bw-unit { font-size: 9px; color: var(--dim); letter-spacing: 0.5px; }
+
+/* ---- Bottom nav ---- */
+.bnav {
+  margin: 14px 16px 20px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 22px;
+  backdrop-filter: blur(30px);
+  display: flex;
+  padding: 8px 4px;
+  position: relative;
+  z-index: 2;
+}
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.bnav-item.on { background: rgba(255,255,255,0.07); }
+.bnav-icon { font-size: 16px; opacity: 0.3; }
+.bnav-icon.on { opacity: 1; filter: drop-shadow(0 0 6px var(--violet)); }
+.bnav-lbl { font-size: 8px; font-weight: 500; color: var(--muted); letter-spacing: 0.3px; }
+.bnav-lbl.on { color: var(--violet); }
+
+/* ============ PANEL ============ */
+.panel {
+  flex: 1;
+  max-width: 460px;
+  padding-top: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.panel-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--violet);
+  opacity: 0.8;
+  font-family: 'Fira Code', monospace;
+  margin-bottom: 10px;
+}
+.panel h1 {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 0.95;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--white) 30%, rgba(250,250,250,0.5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.panel h1 em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--violet), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.panel-desc {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--dim);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 380px;
+}
+
+.decisions { display: flex; flex-direction: column; gap: 0; }
+.decision {
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  align-items: flex-start;
+}
+.decision:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+.d-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.d-dot.violet { background: var(--violet); box-shadow: 0 0 8px rgba(180,122,255,0.5); }
+.d-dot.amber { background: var(--amber); box-shadow: 0 0 8px rgba(255,180,70,0.4); }
+.d-dot.teal { background: var(--teal); box-shadow: 0 0 8px rgba(60,200,180,0.4); }
+.d-dot.red { background: var(--red); box-shadow: 0 0 8px rgba(255,80,80,0.5); }
+.d-dot.white { background: rgba(255,255,255,0.5); }
+.d-body h4 { font-size: 14px; font-weight: 600; margin-bottom: 5px; letter-spacing: -0.2px; }
+.d-body p { font-size: 12px; font-weight: 300; color: var(--dim); line-height: 1.6; }
+
+.trend-badges {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.trend-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: var(--dim);
+  backdrop-filter: blur(10px);
+}
+.trend-badge.v { border-color: rgba(180,122,255,0.25); color: var(--violet); background: rgba(180,122,255,0.08); }
+.trend-badge.t { border-color: rgba(60,200,180,0.25); color: var(--teal); background: rgba(60,200,180,0.08); }
+.trend-badge.a { border-color: rgba(255,180,70,0.25); color: var(--amber); background: rgba(255,180,70,0.08); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <!-- Aurora orbs -->
+  <div class="phone-aurora">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="dyn-island"></div>
+  <div class="status">
+    <span>09:41</span>
+    <span>5G ▮▮▮</span>
+  </div>
+
+  <div class="app-bar">
+    <div class="wordmark">
+      <div class="wm-icon">◈</div>
+      <div class="wm-text">Notif<span>Awards</span></div>
+    </div>
+    <div class="bar-actions">
+      <div class="bar-btn">
+        🔔
+        <div class="badge">3</div>
+      </div>
+      <div class="bar-btn">⊞</div>
+    </div>
+  </div>
+
+  <div class="greeting">
+    <div class="greeting-sub">Bugün · 15 Mayıs 2025</div>
+    <div class="greeting-main"><em>3 ödül</em> dikkat istiyor</div>
+  </div>
+
+  <div class="bento">
+    <!-- Urgent full-width -->
+    <div class="bento-urgent">
+      <div class="bu-left">
+        <div class="bu-pill"><div class="bu-pulse"></div> SON SAATLER</div>
+        <div class="bu-name">Effie Awards<br>Türkiye 2025</div>
+        <div class="bu-date">15 Mayıs · 23:59</div>
+      </div>
+      <div class="bu-right">
+        <div class="bu-num">06</div>
+        <div class="bu-unit">SAAT KALDI</div>
+      </div>
+    </div>
+
+    <!-- Card 1 -->
+    <div class="bento-card bc-accent-violet">
+      <div class="bc-glow"></div>
+      <div class="bc-track on">★</div>
+      <div class="bc-region">🌍 Global</div>
+      <div class="bc-name">Cannes Lions</div>
+      <div class="bc-num-row">
+        <div class="bc-num">14</div>
+        <div class="bc-unit">gün</div>
+      </div>
+      <div class="bc-cats">
+        <span class="bc-cat">Film</span>
+        <span class="bc-cat">OOH</span>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="bento-card bc-accent-teal">
+      <div class="bc-glow"></div>
+      <div class="bc-track">☆</div>
+      <div class="bc-region">🌍 Global</div>
+      <div class="bc-name">D&AD Awards</div>
+      <div class="bc-num-row">
+        <div class="bc-num">31</div>
+        <div class="bc-unit">gün</div>
+      </div>
+      <div class="bc-cats">
+        <span class="bc-cat">Tasarım</span>
+      </div>
+    </div>
+
+    <!-- Wide card -->
+    <div class="bento-wide">
+      <div class="bw-left">
+        <div class="bw-region">🇹🇷 Türkiye</div>
+        <div class="bw-name">Crystal Apple</div>
+        <div class="bw-cats">
+          <span class="bw-cat">Reklam</span>
+          <span class="bw-cat">PR</span>
+          <span class="bw-cat">Dijital</span>
+        </div>
+      </div>
+      <div class="bw-right">
+        <div class="bw-num">47</div>
+        <div class="bw-unit">GÜN KALDI</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bnav">
+    <div class="bnav-item on">
+      <div class="bnav-icon on">◈</div>
+      <div class="bnav-lbl on">Ödüller</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">★</div>
+      <div class="bnav-lbl">Takip</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">⊞</div>
+      <div class="bnav-lbl">Keşfet</div>
+    </div>
+    <div class="bnav-item">
+      <div class="bnav-icon">◎</div>
+      <div class="bnav-lbl">Profil</div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="panel">
+  <div class="panel-eyebrow">// 3. Yön</div>
+  <h1>Aurora<br><em>Glass</em><br>Bento</h1>
+  <p class="panel-desc">Outfit + Fira Code. Derin karanlık zemin, renkli ışık orbs, frosted glass kartlar, bento grid layout. Linear, Raycast, Vercel'in yaptığı — 2025'in en dominant trendi.</p>
+
+  <div class="decisions">
+    <div class="decision">
+      <div class="d-dot violet"></div>
+      <div class="d-body">
+        <h4>Aurora orb'lar</h4>
+        <p>Mor, amber, teal — üç renk noktası arka planda yumuşak ışık saçıyor. Statik ama dinamik hissettiriyor. OLED ekranda muhteşem görünüyor.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-dot teal"></div>
+      <div class="d-body">
+        <h4>Glassmorphism kartlar</h4>
+        <p>backdrop-filter: blur(20px) + rgba border. Her kart sanki cam arkasında duruyor. Derinlik hissi, layer duygusu.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-dot amber"></div>
+      <div class="d-body">
+        <h4>Bento grid layout</h4>
+        <p>Apple'ın 2023'te tanıttığı, tüm endüstrinin benimsediği bilgi mimarisi. Urgent = tam genişlik. Yakın tarihler = 2 kolon. Uzak = wide card.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-dot red"></div>
+      <div class="d-body">
+        <h4>Semantic renk sistemi</h4>
+        <p>Urgent → kırmızı + pulse. Takipte → mor glow. Keşfet → teal. Tarih yaklaştıkça renk değişimi otomatik urgency iletişimi kuruyor.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="d-dot white"></div>
+      <div class="d-body">
+        <h4>Grain texture overlay</h4>
+        <p>Fark edilmez ama hissedilir. Ekrana fiziksel malzeme hissi veriyor. Flat dijital görünümden çıkarıyor. Superhuman, Linear kullanıyor.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="trend-badges">
+    <span class="trend-badge v">Glassmorphism</span>
+    <span class="trend-badge t">Bento Grid</span>
+    <span class="trend-badge a">Aurora BG</span>
+    <span class="trend-badge">Semantic Color</span>
+    <span class="trend-badge">Grain Texture</span>
+    <span class="trend-badge v">Fira Code mono</span>
+  </div>
+</div>
+
+</body>
+</html>

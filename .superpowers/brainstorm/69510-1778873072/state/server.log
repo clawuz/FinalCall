@@ -1,0 +1,7 @@
+{"type":"server-started","port":54570,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:54570","screen_dir":"/Users/okilavuz/Desktop/omer_works/NotifAwards/.superpowers/brainstorm/69510-1778873072/content","state_dir":"/Users/okilavuz/Desktop/omer_works/NotifAwards/.superpowers/brainstorm/69510-1778873072/state"}
+{"type":"screen-added","file":"/Users/okilavuz/Desktop/omer_works/NotifAwards/.superpowers/brainstorm/69510-1778873072/content/app-style.html"}
+{"type":"screen-added","file":"/Users/okilavuz/Desktop/omer_works/NotifAwards/.superpowers/brainstorm/69510-1778873072/content/app-mockup-home.html"}
+{"type":"screen-added","file":"/Users/okilavuz/Desktop/omer_works/NotifAwards/.superpowers/brainstorm/69510-1778873072/content/app-mockup-premium.html"}
+{"type":"screen-added","file":"/Users/okilavuz/Desktop/omer_works/NotifAwards/.superpowers/brainstorm/69510-1778873072/content/app-mockup-poster.html"}
+{"type":"screen-added","file":"/Users/okilavuz/Desktop/omer_works/NotifAwards/.superpowers/brainstorm/69510-1778873072/content/app-mockup-aurora.html"}
+{"type":"server-stopped","reason":"idle timeout"}
