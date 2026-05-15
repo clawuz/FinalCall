@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "NotifAwards",
+    "slug": "notifawards",
+    "scheme": "notifawards",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#07070C"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.notifawards.app"
+    },
+    "android": {
+      "package": "com.notifawards.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#07070C"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#B47AFF"
+        }
+      ],
+      "expo-calendar"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

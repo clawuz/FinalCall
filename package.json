@@ -1,0 +1,42 @@
+{
+  "name": "notifawards",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo-google-fonts/fira-code": "^0.4.1",
+    "@expo-google-fonts/outfit": "^0.4.3",
+    "@firebase/firestore": "^4.14.1",
+    "@react-navigation/bottom-tabs": "^7.16.1",
+    "@react-navigation/native": "^7.2.4",
+    "expo": "~54.0.33",
+    "expo-background-fetch": "^55.0.16",
+    "expo-calendar": "^55.0.14",
+    "expo-constants": "^55.0.16",
+    "expo-device": "^55.0.17",
+    "expo-font": "^55.0.7",
+    "expo-notifications": "^55.0.23",
+    "expo-router": "^55.0.14",
+    "expo-splash-screen": "^55.0.21",
+    "expo-status-bar": "~3.0.9",
+    "expo-task-manager": "^55.0.16",
+    "expo-web-browser": "^55.0.16",
+    "firebase": "^12.13.0",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-reanimated": "^4.3.1",
+    "react-native-safe-area-context": "^5.7.0",
+    "react-native-screens": "^4.25.0",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}

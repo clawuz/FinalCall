@@ -1,0 +1,18 @@
+export const Colors = {
+  bg: '#07070C',
+  surface: 'rgba(255,255,255,0.045)',
+  surface2: 'rgba(255,255,255,0.07)',
+  border: 'rgba(255,255,255,0.09)',
+  border2: 'rgba(255,255,255,0.13)',
+  white: '#FAFAFA',
+  dim: 'rgba(250,250,250,0.45)',
+  muted: 'rgba(250,250,250,0.22)',
+  violet: '#B47AFF',
+  violetGlow: 'rgba(180,122,255,0.14)',
+  amber: '#FFB347',
+  amberGlow: 'rgba(255,140,60,0.18)',
+  teal: '#4DCDBE',
+  tealGlow: 'rgba(60,200,180,0.12)',
+  red: '#FF5A5A',
+  redGlow: 'rgba(255,80,80,0.15)',
+} as const;
