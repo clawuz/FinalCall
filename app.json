@@ -20,8 +20,13 @@
       "infoPlist": {
         "NSCalendarsUsageDescription": "Ödül başvuru tarihlerini takvimine eklemek için takvim erişimi gerekiyor.",
         "NSUserNotificationUsageDescription": "Ödül başvuru son tarihleri için bildirim gönderebilmek için izin gerekiyor.",
-        "BGTaskSchedulerPermittedIdentifiers": ["notifawards-background-fetch"],
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "BGTaskSchedulerPermittedIdentifiers": [
+          "notifawards-background-fetch"
+        ],
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -31,7 +36,11 @@
         "backgroundColor": "#07070C"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -50,6 +59,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "25d4e23c-1b4d-4fd4-8d67-4298d3fc3bbb"
+      }
+    },
+    "owner": "kilavuzo"
   }
 }

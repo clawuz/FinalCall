@@ -23,14 +23,5 @@
         "simulator": false
       }
     }
-  },
-  "submit": {
-    "production": {
-      "ios": {
-        "appleId": "omerugurkilavuz@gmail.com",
-        "ascAppId": "",
-        "appleTeamId": ""
-      }
-    }
   }
 }
