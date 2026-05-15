@@ -15,7 +15,14 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.notifawards.app"
+      "bundleIdentifier": "com.notifawards.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCalendarsUsageDescription": "Ödül başvuru tarihlerini takvimine eklemek için takvim erişimi gerekiyor.",
+        "NSUserNotificationUsageDescription": "Ödül başvuru son tarihleri için bildirim gönderebilmek için izin gerekiyor.",
+        "BGTaskSchedulerPermittedIdentifiers": ["notifawards-background-fetch"],
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
     },
     "android": {
       "package": "com.notifawards.app",
