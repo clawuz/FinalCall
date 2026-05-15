@@ -12,6 +12,7 @@
     "@expo-google-fonts/fira-code": "^0.4.1",
     "@expo-google-fonts/outfit": "^0.4.3",
     "@firebase/firestore": "^4.14.1",
+    "@react-native-async-storage/async-storage": "^3.0.2",
     "@react-navigation/bottom-tabs": "^7.16.1",
     "@react-navigation/native": "^7.2.4",
     "expo": "~54.0.33",
@@ -36,6 +37,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "firebase-admin": "^13.10.0",
+    "tsx": "^4.22.0",
     "typescript": "~5.9.2"
   },
   "private": true

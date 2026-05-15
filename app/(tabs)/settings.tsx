@@ -1,26 +1,37 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
   SafeAreaView, StatusBar, Switch, Alert,
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Fonts, Spacing, Radius } from '@/constants/Theme';
+import { usePrefsStore } from '@/store/prefsStore';
+import { cancelAllNotifications } from '@/services/notifications';
 
 export default function SettingsScreen() {
-  const [allNotifs, setAllNotifs] = useState(true);
-  const [openNotif, setOpenNotif] = useState(true);
-  const [countdownNotif, setCountdownNotif] = useState(true);
-  const [lastDayNotif, setLastDayNotif] = useState(true);
-  const [quietStart] = useState(22);
-  const [quietEnd] = useState(8);
+  const allNotifs = usePrefsStore((s) => s.allNotifs);
+  const openNotif = usePrefsStore((s) => s.openNotif);
+  const countdownNotif = usePrefsStore((s) => s.countdownNotif);
+  const lastDayNotif = usePrefsStore((s) => s.lastDayNotif);
+  const quietStart = usePrefsStore((s) => s.quietStart);
+  const quietEnd = usePrefsStore((s) => s.quietEnd);
+  const setAllNotifs = usePrefsStore((s) => s.setAllNotifs);
+  const setOpenNotif = usePrefsStore((s) => s.setOpenNotif);
+  const setCountdownNotif = usePrefsStore((s) => s.setCountdownNotif);
+  const setLastDayNotif = usePrefsStore((s) => s.setLastDayNotif);
 
   function handleReset() {
     Alert.alert(
       'Bildirimleri Sıfırla',
-      'Tüm ödüller için bildirim ayarları sıfırlanacak. Devam?',
+      'Tüm planlanmış bildirimler iptal edilecek. Devam?',
       [
         { text: 'İptal', style: 'cancel' },
-        { text: 'Sıfırla', style: 'destructive', onPress: () => {} },
+        {
+          text: 'Sıfırla', style: 'destructive', onPress: async () => {
+            await cancelAllNotifications();
+            Alert.alert('Tamam', 'Tüm bildirimler iptal edildi.');
+          }
+        },
       ]
     );
   }

@@ -4,7 +4,8 @@
       "Bash(timeout 15 bun expo start --no-dev --platform ios)",
       "Bash(git commit -m ' *)",
       "Bash(git commit *)",
-      "Bash(/Users/okilavuz/.bun/bin/bunx tsc *)"
+      "Bash(/Users/okilavuz/.bun/bin/bunx tsc *)",
+      "mcp__plugin_firebase_firebase__firestore_add_document"
     ]
   }
 }

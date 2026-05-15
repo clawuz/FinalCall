@@ -1,4 +1,9 @@
+import { useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { Tabs } from 'expo-router';
+import { useAwardsStore } from '@/store/awardsStore';
+import { configureNotificationHandler } from '@/services/notifications';
+import { registerBackgroundFetch } from '@/services/backgroundFetch';
 
 const TABS = [
   { name: 'index', title: 'Ödüller', icon: '◈' },
@@ -9,6 +14,25 @@ const TABS = [
 ];
 
 export default function TabLayout() {
+  const startListening = useAwardsStore((s) => s.startListening);
+  const stopListening = useAwardsStore((s) => s.stopListening);
+
+  useEffect(() => {
+    configureNotificationHandler();
+    startListening();
+    registerBackgroundFetch();
+
+    // Re-fetch on foreground to guarantee fresh data
+    const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
+      if (state === 'active') startListening();
+    });
+
+    return () => {
+      stopListening();
+      sub.remove();
+    };
+  }, []);
+
   return (
     <Tabs
       screenOptions={{
