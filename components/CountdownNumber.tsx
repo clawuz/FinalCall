@@ -1,22 +1,41 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { Text, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 interface CountdownNumberProps {
-  value: number;
-  label: string;
+  value: number | string;
+  unit: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  color?: string;
 }
 
-export default function CountdownNumber({ value, label }: CountdownNumberProps) {
+const SIZE_MAP = {
+  sm: { num: 20, unit: 8 },
+  md: { num: 28, unit: 9 },
+  lg: { num: 36, unit: 10 },
+  xl: { num: 48, unit: 11 },
+};
+
+export function CountdownNumber({ value, unit, size = 'md', color = Colors.amber }: CountdownNumberProps) {
+  const sizes = SIZE_MAP[size];
   return (
-    <View style={styles.container}>
-      <Text style={styles.number}>{String(value).padStart(2, '0')}</Text>
-      <Text style={styles.label}>{label}</Text>
-    </View>
+    <>
+      <Text style={[styles.num, { fontSize: sizes.num, color }]}>{value}</Text>
+      <Text style={[styles.unit, { fontSize: sizes.unit }]}>{unit.toUpperCase()}</Text>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', marginHorizontal: 8 },
-  number: { color: Colors.white, fontFamily: 'Outfit_800ExtraBold', fontSize: 36 },
-  label: { color: Colors.muted, fontFamily: 'Outfit_400Regular', fontSize: 10, letterSpacing: 1, marginTop: 2 },
+  num: {
+    fontFamily: 'Courier', // Mono
+    fontWeight: '700',
+    letterSpacing: -1,
+  },
+  unit: {
+    fontFamily: 'Outfit_600SemiBold',
+    color: Colors.dim,
+    letterSpacing: 1.5,
+    marginTop: 2,
+  },
 });

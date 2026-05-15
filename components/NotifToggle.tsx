@@ -1,33 +1,49 @@
-import { View, Text, Switch, StyleSheet } from 'react-native';
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 interface NotifToggleProps {
-  label?: string;
-  value?: boolean;
-  onValueChange?: (value: boolean) => void;
+  isTracking: boolean;
+  onPress: () => void;
+  size?: number;
 }
 
-export default function NotifToggle({ label, value = false, onValueChange }: NotifToggleProps) {
+export function NotifToggle({ isTracking, onPress, size = 22 }: NotifToggleProps) {
   return (
-    <View style={styles.row}>
-      <Text style={styles.label}>{label ?? 'Bildirim'}</Text>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: Colors.surface2, true: Colors.violetGlow }}
-        thumbColor={value ? Colors.violet : Colors.muted}
-      />
-    </View>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.btn,
+        { width: size, height: size },
+        isTracking && styles.btnActive,
+      ]}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+    >
+      <Text style={[styles.icon, isTracking && styles.iconActive]}>
+        {isTracking ? '★' : '☆'}
+      </Text>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
+  btn: {
+    borderRadius: 9999,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    justifyContent: 'center',
   },
-  label: { color: Colors.white, fontFamily: 'Outfit_400Regular', fontSize: 15 },
+  btnActive: {
+    backgroundColor: Colors.amberDim,
+    borderColor: 'rgba(255,180,70,0.3)',
+  },
+  icon: {
+    fontSize: 10,
+    color: Colors.muted,
+  },
+  iconActive: {
+    color: Colors.amber,
+  },
 });
