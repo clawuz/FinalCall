@@ -148,7 +148,7 @@ export default function AwardsScreen() {
           <View>
             <Text style={styles.logoSub}>marketing ödülleri</Text>
             <Text style={styles.logoMain}>
-              Notif<Text style={styles.logoAccent}>Awards</Text>
+              Final<Text style={styles.logoAccent}> Call</Text>
             </Text>
           </View>
           <View style={styles.headerRight}>

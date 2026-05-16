@@ -75,7 +75,7 @@ export default function OnboardingScreen() {
         {/* Skip */}
         <View style={styles.topBar}>
           <Text style={styles.logo}>
-            Notif<Text style={styles.logoAccent}>Awards</Text>
+            Final<Text style={styles.logoAccent}> Call</Text>
           </Text>
           {!isLast && (
             <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>

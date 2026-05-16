@@ -1,7 +1,7 @@
 {
   "name": "notifawards-functions",
   "version": "1.0.0",
-  "description": "Firebase Cloud Functions for NotifAwards",
+  "description": "Firebase Cloud Functions for Final Call",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",

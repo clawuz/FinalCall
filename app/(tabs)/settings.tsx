@@ -105,7 +105,7 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>UYGULAMA</Text>
           <View style={styles.group}>
             <View style={styles.aboutRow}>
-              <Text style={styles.rowLabel}>NotifAwards</Text>
+              <Text style={styles.rowLabel}>Final Call</Text>
               <Text style={styles.aboutVersion}>v1.0.0</Text>
             </View>
             <View style={[styles.aboutRow, styles.rowBorder]}>
