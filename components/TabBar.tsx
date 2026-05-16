@@ -37,6 +37,7 @@ function TabItem({
 
   useEffect(() => {
     if (isActive) {
+      scaleAnim.setValue(0.85);
       Animated.parallel([
         Animated.spring(scaleAnim, {
           toValue: 1,
@@ -50,8 +51,6 @@ function TabItem({
           useNativeDriver: false,
         }),
       ]).start();
-      // Trigger scale pop
-      scaleAnim.setValue(0.85);
     } else {
       Animated.timing(glowAnim, {
         toValue: 0,
