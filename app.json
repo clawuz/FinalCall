@@ -8,6 +8,7 @@
     "icon": "./assets/icons/icon-ios-1024.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
     "splash": {
       "image": "./assets/splash/splash-iphone-1170x2532.png",
       "resizeMode": "cover",
