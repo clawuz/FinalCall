@@ -4,7 +4,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, Animated, Platform,
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { Fonts, Spacing } from '@/constants/Theme';
+import { Fonts } from '@/constants/Theme';
 import { Award, getCountdownDisplay } from '@/types';
 import { resolveAwardColor } from '@/constants/AwardColors';
 
@@ -15,7 +15,6 @@ interface AwardCardProps {
   isTracking: boolean;
   onTrackToggle: (id: string) => void;
   onPress: () => void;
-  showParticleBurst?: boolean;
 }
 
 function getRegionFlag(region: string, country: string): string {
@@ -55,9 +54,9 @@ export default function AwardCard({ award, isTracking, onTrackToggle, onPress }:
     ).start();
   }, []);
 
-  const glowOpacity = glowAnim.interpolate({
+  const glowColor = glowAnim.interpolate({
     inputRange: [0.3, 0.7],
-    outputRange: [0.3, 0.7],
+    outputRange: [`rgba(${colorDef.rgb}, 0.3)`, `rgba(${colorDef.rgb}, 0.7)`],
   });
 
   return (
@@ -113,7 +112,7 @@ export default function AwardCard({ award, isTracking, onTrackToggle, onPress }:
               styles.num,
               {
                 color: colorDef.hex,
-                textShadowColor: `rgba(${colorDef.rgb}, ${glowOpacity})`,
+                textShadowColor: glowColor,
                 textShadowOffset: { width: 0, height: 0 },
                 textShadowRadius: 12,
               },
