@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { registerPushToken, updateUserNotifSettings } from '@/services/userPrefs';
 
 interface PrefsState {
   quietStart: number;
@@ -25,7 +26,7 @@ interface PrefsState {
 
 export const usePrefsStore = create<PrefsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       quietStart: 22,
       quietEnd: 8,
       pushToken: null,
@@ -35,10 +36,21 @@ export const usePrefsStore = create<PrefsState>()(
       countdownNotif: true,
       lastDayNotif: true,
 
-      setQuietHours: (start, end) => set({ quietStart: start, quietEnd: end }),
-      setPushToken: (token) => set({ pushToken: token }),
+      setQuietHours: (start, end) => {
+        set({ quietStart: start, quietEnd: end });
+        const token = get().pushToken;
+        if (token) updateUserNotifSettings(token, { quietStart: start, quietEnd: end });
+      },
+      setPushToken: (token) => {
+        set({ pushToken: token });
+        if (token) registerPushToken(token);
+      },
       setOnboarded: () => set({ hasOnboarded: true }),
-      setAllNotifs: (v) => set({ allNotifs: v }),
+      setAllNotifs: (v) => {
+        set({ allNotifs: v });
+        const token = get().pushToken;
+        if (token) updateUserNotifSettings(token, { allNotifs: v });
+      },
       setOpenNotif: (v) => set({ openNotif: v }),
       setCountdownNotif: (v) => set({ countdownNotif: v }),
       setLastDayNotif: (v) => set({ lastDayNotif: v }),
