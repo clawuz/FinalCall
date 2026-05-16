@@ -76,28 +76,30 @@ export default function AwardCard({ award, isTracking, onTrackToggle, onPress }:
         },
       ]}
     >
-      {/* Scan line overlay */}
+      {/* Scan line: three overlapping thin strips for soft gradient shimmer */}
       <Animated.View
         pointerEvents="none"
         style={[
           StyleSheet.absoluteFillObject,
-          styles.scanLine,
+          styles.scanOuter,
           {
             opacity: scanAnim.interpolate({
-              inputRange: [0, 0.4, 0.6, 1],
-              outputRange: [0, 0.6, 0.6, 0],
+              inputRange: [0, 0.15, 0.85, 1],
+              outputRange: [0, 1, 1, 0],
             }),
-            transform: [
-              {
-                translateX: scanAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-300, 300],
-                }),
-              },
-            ],
+            transform: [{
+              translateX: scanAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-200, 500],
+              }),
+            }],
           },
         ]}
-      />
+      >
+        <View style={[styles.scanStrip, { opacity: 0.04, width: 60 }]} />
+        <View style={[styles.scanStrip, { opacity: 0.10, width: 20 }]} />
+        <View style={[styles.scanStrip, { opacity: 0.04, width: 60 }]} />
+      </Animated.View>
 
       <View style={styles.top}>
         <View style={styles.left}>
@@ -155,10 +157,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     overflow: 'hidden',
   },
-  scanLine: {
-    width: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+  scanOuter: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    width: 140,
+  },
+  scanStrip: {
+    height: '100%',
+    backgroundColor: '#fff',
   },
   top: {
     flexDirection: 'row',

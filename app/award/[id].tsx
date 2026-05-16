@@ -4,13 +4,14 @@ import {
   SafeAreaView, StatusBar, Alert, Platform, ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import * as Calendar from 'expo-calendar';
+const Calendar = Platform.OS !== 'web' ? require('expo-calendar') : null;
 import * as WebBrowser from 'expo-web-browser';
 import { Timestamp } from 'firebase/firestore';
 import { Colors } from '@/constants/Colors';
 import { Fonts, Spacing, Radius } from '@/constants/Theme';
 import { useAwardsStore } from '@/store/awardsStore';
 import { getCountdownDisplay } from '@/types';
+import { resolveAwardColor } from '@/constants/AwardColors';
 
 function formatDate(ts: Timestamp): string {
   return ts.toDate().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -30,6 +31,10 @@ export default function AwardDetailScreen() {
 
   async function handleAddToCalendar() {
     if (!award) return;
+    if (!Calendar) {
+      Alert.alert('Desteklenmiyor', 'Takvim özelliği yalnızca mobil uygulamada kullanılabilir.');
+      return;
+    }
     try {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status !== 'granted') {
@@ -98,13 +103,14 @@ export default function AwardDetailScreen() {
 
   const countdown = getCountdownDisplay(award.deadlineDate);
   const isUrgent = countdown.urgency === 'critical';
-  const countColor = isUrgent ? Colors.red : Colors.amber;
+  const colorDef = resolveAwardColor(award.color);
+  const countColor = isUrgent ? Colors.red : colorDef.hex;
 
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
       <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
-        <View style={styles.orb1} />
+        <View style={[styles.orb1, { backgroundColor: `rgba(${colorDef.rgb},0.10)` }]} />
         <View style={styles.orb2} />
       </View>
 
@@ -116,9 +122,15 @@ export default function AwardDetailScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => toggleTracking(award.id)}
-            style={[styles.trackBtn, tracking && styles.trackBtnActive]}
+            style={[
+              styles.trackBtn,
+              tracking && {
+                backgroundColor: `rgba(${colorDef.rgb},0.15)`,
+                borderColor: `rgba(${colorDef.rgb},0.35)`,
+              },
+            ]}
           >
-            <Text style={[styles.trackIcon, tracking && styles.trackIconActive]}>
+            <Text style={[styles.trackIcon, tracking && { color: colorDef.hex }]}>
               {tracking ? '★ Takipte' : '☆ Takip Et'}
             </Text>
           </TouchableOpacity>
@@ -135,7 +147,17 @@ export default function AwardDetailScreen() {
           </View>
 
           {/* Countdown */}
-          <View style={[styles.countdownCard, isUrgent && styles.countdownCardUrgent]}>
+          <View style={[
+            styles.countdownCard,
+            {
+              borderColor: isUrgent ? 'rgba(255,80,80,0.25)' : `rgba(${colorDef.rgb},0.2)`,
+              backgroundColor: isUrgent ? 'rgba(255,80,80,0.08)' : `rgba(${colorDef.rgb},0.06)`,
+              shadowColor: countColor,
+              shadowOpacity: 0.15,
+              shadowRadius: 20,
+              shadowOffset: { width: 0, height: 4 },
+            },
+          ]}>
             <Text style={styles.countdownLabel}>
               {isUrgent ? '⚠ Son Saatler' : 'Son Başvuruya'}
             </Text>
@@ -152,7 +174,10 @@ export default function AwardDetailScreen() {
 
           {/* Actions */}
           <View style={styles.actions}>
-            <TouchableOpacity onPress={handleApply} style={styles.applyBtn}>
+            <TouchableOpacity
+              onPress={handleApply}
+              style={[styles.applyBtn, { backgroundColor: colorDef.hex }]}
+            >
               <Text style={styles.applyBtnText}>Başvur →</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleAddToCalendar} style={styles.calBtn}>
@@ -251,7 +276,7 @@ const styles = StyleSheet.create({
   backBtnCenter: { paddingHorizontal: 20, paddingVertical: 10 },
   backBtnCenterText: { fontFamily: Fonts.semiBold, fontSize: 14, color: Colors.violet },
 
-  orb1: { position: 'absolute', borderRadius: 9999, width: 300, height: 300, top: -80, right: -80, backgroundColor: 'rgba(180,122,255,0.08)' },
+  orb1: { position: 'absolute', borderRadius: 9999, width: 300, height: 300, top: -80, right: -80 },
   orb2: { position: 'absolute', borderRadius: 9999, width: 200, height: 200, bottom: 100, left: -60, backgroundColor: 'rgba(255,140,60,0.06)' },
 
   topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md },
@@ -259,9 +284,7 @@ const styles = StyleSheet.create({
   backIcon: { fontFamily: Fonts.regular, fontSize: 18, color: Colors.violet },
   backText: { fontFamily: Fonts.semiBold, fontSize: 14, color: Colors.violet },
   trackBtn: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.surface },
-  trackBtnActive: { backgroundColor: Colors.amberDim, borderColor: 'rgba(255,180,70,0.3)' },
   trackIcon: { fontFamily: Fonts.semiBold, fontSize: 12, color: Colors.muted },
-  trackIconActive: { color: Colors.amber },
 
   scroll: { paddingHorizontal: Spacing.xl, paddingBottom: 40 },
 
@@ -270,8 +293,7 @@ const styles = StyleSheet.create({
   heroName: { fontFamily: Fonts.extraBold, fontSize: 32, color: Colors.white, letterSpacing: -1, lineHeight: 36, marginBottom: 4 },
   heroNameEn: { fontFamily: Fonts.regular, fontSize: 13, color: Colors.muted, fontStyle: 'italic' },
 
-  countdownCard: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.xl, padding: Spacing.xl, marginBottom: Spacing.md, alignItems: 'center' },
-  countdownCardUrgent: { backgroundColor: 'rgba(255,80,80,0.08)', borderColor: 'rgba(255,80,80,0.2)' },
+  countdownCard: { borderWidth: 1, borderRadius: Radius.xl, padding: Spacing.xl, marginBottom: Spacing.md, alignItems: 'center' },
   countdownLabel: { fontFamily: Fonts.bold, fontSize: 10, color: Colors.muted, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 },
   countdownRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10, marginBottom: 10 },
   countdownNum: { fontSize: 72, fontWeight: '700', lineHeight: 72, letterSpacing: -3 },
