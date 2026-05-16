@@ -18,6 +18,7 @@ export interface Award {
   fee?: string;
   logoUrl?: string;
   description?: string;
+  color?: string;   // AwardColorKey — resolved via resolveAwardColor()
   pastWinners?: string;
   isActive: boolean;
   createdAt: Timestamp;

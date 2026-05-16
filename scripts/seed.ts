@@ -25,6 +25,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     website: 'https://effie.com.tr',
     fee: '₺2.500 - ₺5.000 / kategori',
     description: 'Pazarlama etkinliğini ödüllendiren uluslararası Effie\'nin Türkiye ayağı.',
+    color: 'gold',
     isActive: true,
   },
   {
@@ -38,6 +39,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     website: 'https://kristalelma.org.tr',
     fee: '₺3.000 - ₺6.000 / kategori',
     description: 'Türkiye\'nin en prestijli yaratıcı iletişim ödülü.',
+    color: 'teal',
     isActive: true,
   },
   {
@@ -50,6 +52,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     applicationUrl: 'https://felisawards.com/basvuru',
     website: 'https://felisawards.com',
     fee: '₺2.000 - ₺4.000 / kategori',
+    color: 'amber',
     isActive: true,
   },
   {
@@ -61,6 +64,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     deadlineDate: date(2025, 8, 15),
     applicationUrl: 'https://mmaglobal.com/smarties',
     website: 'https://mmaglobal.com',
+    color: 'amber',
     isActive: true,
   },
   {
@@ -72,6 +76,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     deadlineDate: date(2025, 7, 31),
     applicationUrl: 'https://brandverseawards.com',
     website: 'https://brandverseawards.com',
+    color: 'amber',
     isActive: true,
   },
   // GLOBAL
@@ -88,6 +93,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     website: 'https://www.canneslions.com',
     fee: '€500 - €2.500 / kategori',
     description: 'Dünyanın en prestijli yaratıcı iletişim festivali.',
+    color: 'amber',
     isActive: true,
   },
   {
@@ -100,6 +106,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     applicationUrl: 'https://www.dandad.org/awards/professional',
     website: 'https://www.dandad.org',
     fee: '£450 - £1.200 / kategori',
+    color: 'violet',
     isActive: true,
   },
   {
@@ -112,6 +119,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     applicationUrl: 'https://clios.com/awards/enter',
     website: 'https://clios.com',
     fee: '$500 - $2.000 / kategori',
+    color: 'red',
     isActive: true,
   },
   {
@@ -123,6 +131,7 @@ export const SEED_AWARDS: AwardSeed[] = [
     deadlineDate: date(2025, 6, 20),
     applicationUrl: 'https://www.thedrum.com/awards',
     website: 'https://www.thedrum.com',
+    color: 'amber',
     isActive: true,
   },
 ];
