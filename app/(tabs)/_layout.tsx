@@ -1,17 +1,11 @@
+// app/(tabs)/_layout.tsx
 import { useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { Tabs } from 'expo-router';
 import { useAwardsStore } from '@/store/awardsStore';
 import { configureNotificationHandler } from '@/services/notifications';
 import { registerBackgroundFetch } from '@/services/backgroundFetch';
-
-const TABS = [
-  { name: 'index', title: 'Ödüller', icon: '◈' },
-  { name: 'explore', title: 'Keşfet', icon: '⊞' },
-  { name: 'tracking', title: 'Takip', icon: '★' },
-  { name: 'news', title: 'Haberler', icon: '◉' },
-  { name: 'settings', title: 'Ayarlar', icon: '◎' },
-];
+import TabBar from '@/components/TabBar';
 
 export default function TabLayout() {
   const startListening = useAwardsStore((s) => s.startListening);
@@ -22,7 +16,6 @@ export default function TabLayout() {
     startListening();
     registerBackgroundFetch();
 
-    // Re-fetch on foreground to guarantee fresh data
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') startListening();
     });
@@ -35,32 +28,14 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#0F0D0A',
-          borderTopColor: 'rgba(255,255,255,0.06)',
-          height: 80,
-          paddingBottom: 16,
-        },
-        tabBarActiveTintColor: '#B47AFF',
-        tabBarInactiveTintColor: 'rgba(250,250,250,0.3)',
-        tabBarLabelStyle: {
-          fontSize: 9,
-          letterSpacing: 0.5,
-          fontFamily: 'Outfit_600SemiBold',
-        },
-      }}
+      tabBar={(props) => <TabBar {...props} />}
+      screenOptions={{ headerShown: false }}
     >
-      {TABS.map((tab) => (
-        <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
-          options={{
-            title: tab.title,
-          }}
-        />
-      ))}
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="explore" />
+      <Tabs.Screen name="tracking" />
+      <Tabs.Screen name="news" />
+      <Tabs.Screen name="settings" />
     </Tabs>
   );
 }
