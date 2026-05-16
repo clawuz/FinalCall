@@ -8,6 +8,9 @@ import { Colors } from '@/constants/Colors';
 import { Fonts, Spacing } from '@/constants/Theme';
 import { useAwardsStore } from '@/store/awardsStore';
 import { Award, getCountdownDisplay } from '@/types';
+import AwardCard from '@/components/AwardCard';
+import ParticleBurst from '@/components/ParticleBurst';
+import { resolveAwardColor } from '@/constants/AwardColors';
 
 type FilterType = 'all' | 'TR' | 'Global' | 'tracking';
 
@@ -20,14 +23,6 @@ const FILTER_OPTIONS: { label: string; value: FilterType }[] = [
 
 const MONO_FONT = Platform.select({ ios: 'Courier', android: 'monospace' }) ?? 'Courier';
 
-function getRegionFlag(region: string, country: string): string {
-  if (region === 'TR') return '🇹🇷';
-  const flags: Record<string, string> = {
-    'Fransa': '🇫🇷', 'İngiltere': '🇬🇧', 'ABD': '🇺🇸',
-    'Almanya': '🇩🇪', 'Dubai': '🇦🇪', 'Avrupa': '🇪🇺',
-  };
-  return flags[country] ?? '🌍';
-}
 
 function UrgentHeroBanner({ award }: { award: Award }) {
   const countdown = getCountdownDisplay(award.deadlineDate);
@@ -55,60 +50,6 @@ function UrgentHeroBanner({ award }: { award: Award }) {
   );
 }
 
-function AwardCard({
-  award,
-  isTracking,
-  onTrackToggle,
-}: {
-  award: Award;
-  isTracking: boolean;
-  onTrackToggle: (id: string) => void;
-}) {
-  const countdown = getCountdownDisplay(award.deadlineDate);
-  const isUrgent = countdown.urgency === 'critical';
-  const numColor = isUrgent ? Colors.red : Colors.amber;
-
-  return (
-    <TouchableOpacity
-      onPress={() => router.push(`/award/${award.id}` as never)}
-      style={[styles.card, isUrgent && styles.cardUrgent]}
-      activeOpacity={0.8}
-    >
-      <View style={styles.cardTop}>
-        <View style={styles.cardLeft}>
-          <Text style={styles.cardRegion}>
-            {getRegionFlag(award.region, award.country)} {award.country}
-          </Text>
-          <Text style={styles.cardName}>{award.name}</Text>
-        </View>
-        <View style={styles.cardRight}>
-          <Text style={[styles.cardNum, { color: numColor }]}>{countdown.value}</Text>
-          <Text style={styles.cardUnit}>{countdown.unit.toUpperCase()}</Text>
-        </View>
-      </View>
-
-      <View style={styles.cardBottom}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cats}>
-          {award.categories.map((cat) => (
-            <View key={cat} style={styles.catTag}>
-              <Text style={styles.catText}>{cat}</Text>
-            </View>
-          ))}
-        </ScrollView>
-        <TouchableOpacity
-          onPress={() => onTrackToggle(award.id)}
-          style={[styles.trackBtn, isTracking && styles.trackBtnActive]}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Text style={[styles.trackIcon, isTracking && styles.trackIconActive]}>
-            {isTracking ? '★' : '☆'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
 export default function AwardsScreen() {
   const awards = useAwardsStore((s) => s.awards);
   const loading = useAwardsStore((s) => s.loading);
@@ -118,6 +59,16 @@ export default function AwardsScreen() {
   const isTracking = useAwardsStore((s) => s.isTracking);
   const getFilteredAwards = useAwardsStore((s) => s.getFilteredAwards);
   const getUrgentAwards = useAwardsStore((s) => s.getUrgentAwards);
+
+  const [burstAwardId, setBurstAwardId] = React.useState<string | null>(null);
+
+  const handleTrackToggle = (id: string) => {
+    if (!isTracking(id)) {
+      setBurstAwardId(id);
+      setTimeout(() => setBurstAwardId(null), 700);
+    }
+    toggleTracking(id);
+  };
 
   const urgentAwards = getUrgentAwards();
   const filteredAwards = getFilteredAwards();
@@ -212,14 +163,23 @@ export default function AwardsScreen() {
                   <Text style={styles.sectionLabel}>YAKLAŞAN TARİHLER</Text>
                   <Text style={styles.sectionCount}>{nonUrgentAwards.length} ödül</Text>
                 </View>
-                {nonUrgentAwards.map((award) => (
-                  <AwardCard
-                    key={award.id}
-                    award={award}
-                    isTracking={isTracking(award.id)}
-                    onTrackToggle={toggleTracking}
-                  />
-                ))}
+                {nonUrgentAwards.map((award) => {
+                  const colorDef = resolveAwardColor(award.color);
+                  return (
+                    <View key={award.id} style={{ position: 'relative' }}>
+                      <AwardCard
+                        award={award}
+                        isTracking={isTracking(award.id)}
+                        onTrackToggle={handleTrackToggle}
+                        onPress={() => router.push(`/award/${award.id}` as never)}
+                      />
+                      <ParticleBurst
+                        color={colorDef.hex}
+                        trigger={burstAwardId === award.id}
+                      />
+                    </View>
+                  );
+                })}
               </>
             )}
 
