@@ -1,10 +1,13 @@
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
-import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { Timestamp } from 'firebase/firestore';
 
+// These modules are native-only and must not be imported on web
+const Notifications = Platform.OS !== 'web' ? require('expo-notifications') : null;
+const Device = Platform.OS !== 'web' ? require('expo-device') : null;
+const Constants = Platform.OS !== 'web' ? require('expo-constants').default : null;
+
 export function configureNotificationHandler() {
+  if (!Notifications) return;
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -26,6 +29,7 @@ export function configureNotificationHandler() {
 }
 
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
+  if (!Notifications || !Device) return null;
   if (!Device.isDevice) {
     console.warn('Push notifications require a physical device.');
     return null;
@@ -92,6 +96,7 @@ export async function scheduleAwardNotifications(
   quietStart = 22,
   quietEnd = 8,
 ): Promise<string[]> {
+  if (!Notifications) return [];
   const deadlineMs = deadlineDate.toMillis();
   const now = Date.now();
   const scheduledIds: string[] = [];
@@ -142,6 +147,7 @@ export async function scheduleAwardNotifications(
 
 /** Cancel all scheduled notifications for a specific award. */
 export async function cancelAwardNotifications(awardId: string): Promise<void> {
+  if (!Notifications) return;
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
   const toCancel = scheduled.filter((n) => n.content.data?.awardId === awardId);
   await Promise.all(
@@ -151,5 +157,6 @@ export async function cancelAwardNotifications(awardId: string): Promise<void> {
 
 /** Cancel every scheduled notification in the app. */
 export async function cancelAllNotifications(): Promise<void> {
+  if (!Notifications) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
 }

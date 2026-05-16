@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+    <defs>
+      <radialGradient id="bg" cx="50%" cy="38%" r="80%">
+        <stop offset="0%" stop-color="#ff7a3a"></stop>
+        <stop offset="38%" stop-color="#d92e1e"></stop>
+        <stop offset="75%" stop-color="#6e0f08"></stop>
+        <stop offset="100%" stop-color="#2c0508"></stop>
+      </radialGradient>
+      <radialGradient id="vignette" cx="50%" cy="50%" r="80%">
+        <stop offset="50%" stop-color="#000" stop-opacity="0"></stop>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.45"></stop>
+      </radialGradient>
+      
+  <linearGradient id="bell" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fff1b5"></stop>
+    <stop offset="18%" stop-color="#ffd84a"></stop>
+    <stop offset="55%" stop-color="#e6a912"></stop>
+    <stop offset="85%" stop-color="#9c6b06"></stop>
+    <stop offset="100%" stop-color="#5a3d03"></stop>
+  </linearGradient>
+  <radialGradient id="hl" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#fffbe2" stop-opacity="0.85"></stop>
+    <stop offset="60%" stop-color="#fff1a8" stop-opacity="0.25"></stop>
+    <stop offset="100%" stop-color="#fff1a8" stop-opacity="0"></stop>
+  </radialGradient>
+  <radialGradient id="sh" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#3d2604" stop-opacity="0.55"></stop>
+    <stop offset="60%" stop-color="#3d2604" stop-opacity="0.18"></stop>
+    <stop offset="100%" stop-color="#3d2604" stop-opacity="0"></stop>
+  </radialGradient>
+  <linearGradient id="lip" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8b5e06"></stop>
+    <stop offset="30%" stop-color="#ffe87a"></stop>
+    <stop offset="60%" stop-color="#e6a912"></stop>
+    <stop offset="100%" stop-color="#5a3d03"></stop>
+  </linearGradient>
+  <linearGradient id="crown" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fff1b5"></stop>
+    <stop offset="50%" stop-color="#e6a912"></stop>
+    <stop offset="100%" stop-color="#7a5208"></stop>
+  </linearGradient>
+  <radialGradient id="clap" cx="40%" cy="35%" r="70%">
+    <stop offset="0%" stop-color="#fff6cf"></stop>
+    <stop offset="40%" stop-color="#e6a912"></stop>
+    <stop offset="100%" stop-color="#5a3d03"></stop>
+  </radialGradient>
+  <radialGradient id="shd" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0.55"></stop>
+    <stop offset="100%" stop-color="#000" stop-opacity="0"></stop>
+  </radialGradient>
+
+    </defs>
+    <rect width="1024" height="1024" fill="url(#bg)"></rect>
+    <rect width="1024" height="1024" fill="url(#vignette)"></rect>
+    <svg x="337.91999999999996" y="286.72" width="348.16" height="348.16" viewBox="0 0 1024 1024" overflow="visible">
+      
+  <ellipse cx="512" cy="870" rx="300" ry="36" fill="url(#shd)"></ellipse>
+
+  
+  <path d="M 478 230 C 478 192, 496 174, 512 174 C 528 174, 546 192, 546 230 L 546 290 L 478 290 Z" fill="url(#crown)"></path>
+  <ellipse cx="512" cy="216" rx="17" ry="11" fill="#2a1d04" opacity="0.85"></ellipse>
+  <ellipse cx="503" cy="208" rx="3" ry="6" fill="#fff6cf" opacity="0.85" transform="rotate(-20 503 208)"></ellipse>
+
+  
+  <path d="M 484 290&#xA;           C 472 290, 462 296, 458 320&#xA;           C 422 372, 332 466, 322 538&#xA;           C 318 600, 298 680, 286 716&#xA;           L 738 716&#xA;           C 726 680, 706 600, 702 538&#xA;           C 692 466, 602 372, 566 320&#xA;           C 562 296, 552 290, 540 290&#xA;           Z" fill="url(#bell)"></path>
+
+  
+  <g transform="translate(386 510) rotate(-6)">
+    <ellipse cx="0" cy="0" rx="38" ry="180" fill="url(#hl)"></ellipse>
+  </g>
+
+  
+  <g transform="translate(640 530) rotate(8)">
+    <ellipse cx="0" cy="0" rx="34" ry="160" fill="url(#sh)"></ellipse>
+  </g>
+
+  
+  <path d="M 268 712&#xA;           L 756 712&#xA;           C 770 750, 778 780, 762 798&#xA;           C 720 814, 600 824, 512 824&#xA;           C 424 824, 304 814, 262 798&#xA;           C 246 780, 254 750, 268 712 Z" fill="url(#lip)"></path>
+
+  
+  <path d="M 286 716&#xA;           L 738 716&#xA;           C 728 736, 716 748, 702 752&#xA;           L 322 752&#xA;           C 308 748, 296 736, 286 716 Z" fill="#3d2a05" opacity="0.55"></path>
+
+  
+  <circle cx="498" cy="188" r="4" fill="#fff" opacity="0.95"></circle>
+
+      
+    <g transform="rotate(0 512 808)">
+      <path d="M 506 720 L 518 720 L 518 822 L 506 822 Z" fill="#6b4806"></path>
+      <ellipse cx="512" cy="854" rx="40" ry="42" fill="url(#clap)"></ellipse>
+      <ellipse cx="500" cy="844" rx="11" ry="7" fill="#fff6cf" opacity="0.85"></ellipse>
+    </g>
+  
+    </svg>
+    <text x="512" y="783.3600000000001" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif" font-size="107.52" font-weight="700" letter-spacing="-1" text-anchor="middle" fill="#fff6cf">Final Call</text>
+    <text x="512" y="835.5840000000002" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif" font-size="26.624" font-weight="500" letter-spacing="7.9872" text-anchor="middle" fill="#fff2c2" opacity="0.7">ÖDÜLÜNÜ KAÇIRMA</text>
+    <text x="512" y="942.08" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif" font-size="22.528" font-weight="500" letter-spacing="4.5056" text-anchor="middle" fill="#fff2c2" opacity="0.45">GLOBAL MARKETING AWARDS</text>
+  </svg>
