@@ -30,22 +30,10 @@ export default function AwardCard({ award, isTracking, onTrackToggle, onPress }:
   const colorDef = resolveAwardColor(award.color);
   const countdown = getCountdownDisplay(award.deadlineDate);
 
-  // Scan line animation
-  const scanAnim = useRef(new Animated.Value(0)).current;
-  // Glow pulse
+  // Breathing glow: drives both border shadow and text glow
   const glowAnim = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
-    // Scan line: loops from 0→1 over 4s
-    Animated.loop(
-      Animated.timing(scanAnim, {
-        toValue: 1,
-        duration: 4000,
-        useNativeDriver: false,
-      })
-    ).start();
-
-    // Glow pulse: 0.3→0.7→0.3 every 3s
     Animated.loop(
       Animated.sequence([
         Animated.timing(glowAnim, { toValue: 0.7, duration: 1500, useNativeDriver: false }),
@@ -59,48 +47,40 @@ export default function AwardCard({ award, isTracking, onTrackToggle, onPress }:
     outputRange: [`rgba(${colorDef.rgb}, 0.3)`, `rgba(${colorDef.rgb}, 0.7)`],
   });
 
+  const shadowOpacityAnim = glowAnim.interpolate({
+    inputRange: [0.3, 0.7],
+    outputRange: [0.10, 0.36],
+  });
+
+  const shadowRadiusAnim = glowAnim.interpolate({
+    inputRange: [0.3, 0.7],
+    outputRange: [14, 30],
+  });
+
   return (
+    <Animated.View
+      style={[
+        styles.cardWrapper,
+        {
+          shadowColor: colorDef.hex,
+          shadowOpacity: shadowOpacityAnim,
+          shadowRadius: shadowRadiusAnim,
+          shadowOffset: { width: 0, height: 4 },
+          elevation: 4,
+        },
+      ]}
+    >
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.85}
       style={[
         styles.card,
         {
-          borderColor: `rgba(${colorDef.rgb}, 0.2)`,
+          borderColor: `rgba(${colorDef.rgb}, 0.22)`,
           backgroundColor: `rgba(${colorDef.rgb}, 0.05)`,
-          shadowColor: colorDef.hex,
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-          shadowOffset: { width: 0, height: 4 },
-          elevation: 4,
         },
       ]}
     >
-      {/* Scan line: three overlapping thin strips for soft gradient shimmer */}
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          StyleSheet.absoluteFillObject,
-          styles.scanOuter,
-          {
-            opacity: scanAnim.interpolate({
-              inputRange: [0, 0.15, 0.85, 1],
-              outputRange: [0, 1, 1, 0],
-            }),
-            transform: [{
-              translateX: scanAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-200, 500],
-              }),
-            }],
-          },
-        ]}
-      >
-        <View style={[styles.scanStrip, { opacity: 0.04, width: 60 }]} />
-        <View style={[styles.scanStrip, { opacity: 0.10, width: 20 }]} />
-        <View style={[styles.scanStrip, { opacity: 0.04, width: 60 }]} />
-      </Animated.View>
-
       <View style={styles.top}>
         <View style={styles.left}>
           <Text style={styles.region}>
@@ -146,25 +126,19 @@ export default function AwardCard({ award, isTracking, onTrackToggle, onPress }:
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
+  cardWrapper: {
+    borderRadius: 18,
+    marginBottom: 10,
+  },
   card: {
     borderWidth: 1,
     borderRadius: 18,
     padding: 16,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  scanOuter: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    width: 140,
-  },
-  scanStrip: {
-    height: '100%',
-    backgroundColor: '#fff',
   },
   top: {
     flexDirection: 'row',
