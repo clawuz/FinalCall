@@ -127,15 +127,32 @@ export const checkNotifications = onSchedule(
       return;
     }
 
+    // Current hour in Istanbul (UTC+3)
+    const nowDate = new Date(now);
+    const istanbulHour = (nowDate.getUTCHours() + 3) % 24;
+
     const allTokenDocs = prefsSnap.docs.map((d) => ({
       token: d.id,
       mutedAwards: (d.data().mutedAwards as string[]) ?? [],
       allNotifs: (d.data().allNotifs as boolean) ?? true,
+      quietStart: (d.data().quietStart as number) ?? 22,
+      quietEnd: (d.data().quietEnd as number) ?? 8,
     }));
 
-    // Only keep active tokens (Expo format)
+    function isInQuietHours(quietStart: number, quietEnd: number, hour: number): boolean {
+      if (quietStart > quietEnd) {
+        // Wraps midnight: e.g. 22 → 8
+        return hour >= quietStart || hour < quietEnd;
+      }
+      return hour >= quietStart && hour < quietEnd;
+    }
+
+    // Only keep active tokens (Expo format) that are not in quiet hours
     const activeTokenDocs = allTokenDocs.filter(
-      (t) => t.allNotifs && t.token.startsWith('ExponentPushToken[')
+      (t) =>
+        t.allNotifs &&
+        t.token.startsWith('ExponentPushToken[') &&
+        !isInQuietHours(t.quietStart, t.quietEnd, istanbulHour)
     );
 
     if (activeTokenDocs.length === 0) {
