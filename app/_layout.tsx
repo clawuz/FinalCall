@@ -7,6 +7,7 @@ import { usePrefsStore } from '@/store/prefsStore';
 import { Platform } from 'react-native';
 import SplashAnimation from '@/components/SplashAnimation';
 import { configureNotificationHandler, setupNotificationTapHandler } from '@/services/notifications';
+import { useNotificationsStore } from '@/store/notificationsStore';
 
 if (Platform.OS !== 'web') {
   require('@/services/backgroundFetch');
@@ -25,11 +26,35 @@ export default function RootLayout() {
   const hasOnboarded = usePrefsStore((s) => s.hasOnboarded);
   const router = useRouter();
 
+  const addNotification = useNotificationsStore((s) => s.addNotification);
+
   useEffect(() => {
-    if (Platform.OS !== 'web') {
-      configureNotificationHandler();
-      setupNotificationTapHandler();
-    }
+    if (Platform.OS === 'web') return;
+    configureNotificationHandler();
+
+    const Notifications = require('expo-notifications');
+
+    // Foreground: bildirim gelince kaydet
+    const foregroundSub = Notifications.addNotificationReceivedListener(
+      (notification: { request: { content: { title: string; body: string; data: Record<string, string> } } }) => {
+        const { title, body, data } = notification.request.content;
+        addNotification({ title: title ?? '', body: body ?? '', awardId: data?.awardId, receivedAt: Date.now() });
+      }
+    );
+
+    // Tap: bildirime tıklanınca kaydet + yönlendir
+    const tapSub = Notifications.addNotificationResponseReceivedListener(
+      (response: { notification: { request: { content: { title: string; body: string; data: Record<string, string> } } } }) => {
+        const { title, body, data } = response.notification.request.content;
+        addNotification({ title: title ?? '', body: body ?? '', awardId: data?.awardId, receivedAt: Date.now() });
+        if (data?.awardId) router.push(`/award/${data.awardId}` as never);
+      }
+    );
+
+    return () => {
+      foregroundSub.remove();
+      tapSub.remove();
+    };
   }, []);
 
   // Hide native splash as soon as fonts are ready — custom animation takes over
@@ -58,6 +83,7 @@ export default function RootLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="award/[id]" options={{ presentation: 'card' }} />
+      <Stack.Screen name="notifications" options={{ presentation: 'modal' }} />
       <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
     </Stack>
   );

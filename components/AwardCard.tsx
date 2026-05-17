@@ -10,6 +10,7 @@ import { resolveAwardColor } from '@/constants/AwardColors';
 
 const MONO = Platform.select({ ios: 'Courier', android: 'monospace' }) ?? 'Courier';
 
+
 interface AwardCardProps {
   award: Award;
   isTracking: boolean;
@@ -81,6 +82,9 @@ export default function AwardCard({ award, isTracking, onTrackToggle, onPress }:
         },
       ]}
     >
+      <Text style={[styles.watermark, { color: colorDef.hex }]} numberOfLines={1} adjustsFontSizeToFit>
+        {award.name.toUpperCase()}
+      </Text>
       <View style={styles.top}>
         <View style={styles.left}>
           <Text style={styles.region}>
@@ -145,6 +149,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 12,
+  },
+  watermark: {
+    position: 'absolute',
+    left: 14,
+    right: 52,
+    bottom: 10,
+    fontSize: 28,
+    fontFamily: Fonts.extraBold,
+    letterSpacing: -1,
+    opacity: 0.07,
   },
   left: { flex: 1, paddingRight: 12 },
   region: {

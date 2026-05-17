@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {
   collection, query, where, orderBy,
-  onSnapshot, Unsubscribe,
+  onSnapshot, Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/services/firebase';
 import { Article } from '@/types';
@@ -10,49 +10,108 @@ interface ArticlesState {
   articles: Article[];
   loading: boolean;
   error: string | null;
-  unsubscribe: Unsubscribe | null;
   startListening: () => void;
   stopListening: () => void;
 }
 
-export const useArticlesStore = create<ArticlesState>((set, get) => ({
-  articles: [],
-  loading: true,
-  error: null,
-  unsubscribe: null,
+type Unsub = () => void;
 
-  startListening: () => {
-    const { unsubscribe: existing } = get();
-    if (existing) existing();
+export const useArticlesStore = create<ArticlesState>((set) => {
+  let unsubs: Unsub[] = [];
+  let newsItems: Article[] = [];
+  let tipItems: Article[] = [];
+  let newsLoaded = false;
+  let tipsLoaded = false;
 
-    const q = query(
-      collection(db, 'articles'),
-      where('isActive', '==', true),
-      orderBy('publishedAt', 'desc')
-    );
+  function merge() {
+    if (!newsLoaded && !tipsLoaded) return;
+    const stillLoading = !newsLoaded || !tipsLoaded;
+    const combined = [...newsItems, ...tipItems].sort((a, b) => {
+      const aMs = a.publishedAt?.toMillis?.() ?? 0;
+      const bMs = b.publishedAt?.toMillis?.() ?? 0;
+      return bMs - aMs;
+    });
+    set({ articles: combined, loading: stillLoading, error: null });
+  }
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const articles = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Article[];
-        set({ articles, loading: false, error: null });
-      },
-      (error) => {
-        set({ error: error.message, loading: false });
-      }
-    );
+  return {
+    articles: [],
+    loading: true,
+    error: null,
 
-    set({ unsubscribe });
-  },
+    startListening: () => {
+      unsubs.forEach((u) => u());
+      unsubs = [];
+      newsLoaded = false;
+      tipsLoaded = false;
+      newsItems = [];
+      tipItems = [];
 
-  stopListening: () => {
-    const { unsubscribe } = get();
-    if (unsubscribe) {
-      unsubscribe();
-      set({ unsubscribe: null });
-    }
-  },
-}));
+      const qNews = query(
+        collection(db, 'articles'),
+        where('isActive', '==', true),
+        orderBy('publishedAt', 'desc'),
+      );
+      unsubs.push(
+        onSnapshot(
+          qNews,
+          (snap) => {
+            newsItems = snap.docs.map((doc) => {
+              const d = doc.data();
+              return {
+                id: doc.id,
+                type: 'news',
+                title: d.title as string,
+                summary: (d.summary ?? '') as string,
+                url: d.url as string | undefined,
+                publishedAt: d.publishedAt as Timestamp,
+                isActive: true,
+              } as Article;
+            });
+            newsLoaded = true;
+            merge();
+          },
+          () => {
+            newsLoaded = true;
+            merge();
+          },
+        ),
+      );
+
+      const qTips = query(
+        collection(db, 'tips'),
+        where('isActive', '==', true),
+        orderBy('createdAt', 'desc'),
+      );
+      unsubs.push(
+        onSnapshot(
+          qTips,
+          (snap) => {
+            tipItems = snap.docs.map((doc) => {
+              const d = doc.data();
+              return {
+                id: doc.id,
+                type: 'tip',
+                title: d.title as string,
+                summary: (d.body ?? d.summary ?? '') as string,
+                publishedAt: (d.createdAt ?? Timestamp.now()) as Timestamp,
+                isActive: true,
+              } as Article;
+            });
+            tipsLoaded = true;
+            merge();
+          },
+          () => {
+            tipsLoaded = true;
+            merge();
+          },
+        ),
+      );
+    },
+
+    stopListening: () => {
+      unsubs.forEach((u) => u());
+      unsubs = [];
+    },
+  };
+});

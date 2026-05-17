@@ -6,10 +6,12 @@ import {
 import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { Fonts, Spacing, Radius } from '@/constants/Theme';
+import { resolveAwardColor } from '@/constants/AwardColors';
 import { useAwardsStore } from '@/store/awardsStore';
 import { getDaysLeft, getHoursLeft } from '@/types';
 
 const MONO = Platform.select({ ios: 'Courier', android: 'monospace' }) ?? 'Courier';
+
 
 export default function TrackingScreen() {
   const awards = useAwardsStore((s) => s.awards);
@@ -51,13 +53,25 @@ export default function TrackingScreen() {
                 : String(daysLeft);
               const displayUnit = hoursLeft <= 24 ? 'SAAT' : 'GÜN';
 
+              const colorDef = resolveAwardColor(award.color);
+              const accentColor = isUrgent ? Colors.red : colorDef.hex;
+              const accentDim = isUrgent
+                ? 'rgba(255,80,80,0.04)'
+                : `rgba(${colorDef.rgb},0.06)`;
+              const accentBorder = isUrgent
+                ? 'rgba(255,80,80,0.2)'
+                : `rgba(${colorDef.rgb},0.2)`;
+
               return (
                 <TouchableOpacity
                   key={award.id}
                   onPress={() => router.push(`/award/${award.id}` as never)}
-                  style={[styles.card, isUrgent && styles.cardUrgent]}
+                  style={[styles.card, { backgroundColor: accentDim, borderColor: accentBorder }]}
                   activeOpacity={0.8}
                 >
+                  <Text style={[styles.watermark, { color: accentColor }]} numberOfLines={1} adjustsFontSizeToFit>
+                    {award.name.toUpperCase()}
+                  </Text>
                   <View style={styles.cardLeft}>
                     <Text style={styles.cardRegion}>
                       {award.region === 'TR' ? '🇹🇷' : '🌍'} {award.country}
@@ -70,13 +84,13 @@ export default function TrackingScreen() {
                     </View>
                   </View>
                   <View style={styles.cardRight}>
-                    <Text style={[styles.days, isUrgent && styles.daysUrgent]}>{displayValue}</Text>
+                    <Text style={[styles.days, { color: accentColor }]}>{displayValue}</Text>
                     <Text style={styles.daysUnit}>{displayUnit}</Text>
                     <TouchableOpacity
                       onPress={() => toggleTracking(award.id)}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
-                      <Text style={[styles.trackIcon, isUrgent && styles.trackIconUrgent]}>★</Text>
+                      <Text style={[styles.trackIcon, { color: accentColor }]}>★</Text>
                     </TouchableOpacity>
                   </View>
                 </TouchableOpacity>
@@ -100,21 +114,28 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: Spacing.lg, paddingBottom: 20 },
   card: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1,
     borderRadius: Radius.xl, padding: Spacing.lg, marginBottom: Spacing.sm,
   },
-  cardUrgent: { backgroundColor: 'rgba(255,80,80,0.04)', borderColor: 'rgba(255,80,80,0.2)' },
+  watermark: {
+    position: 'absolute',
+    left: 14,
+    right: 60,
+    bottom: 10,
+    fontSize: 26,
+    fontFamily: Fonts.extraBold,
+    letterSpacing: -1,
+    opacity: 0.07,
+  },
   cardLeft: { flex: 1 },
   cardRegion: { fontFamily: Fonts.regular, fontSize: 9, color: Colors.muted, marginBottom: 3 },
   cardName: { fontFamily: Fonts.bold, fontSize: 18, color: Colors.white, marginBottom: 6 },
   cats: { flexDirection: 'row', gap: 5 },
   cat: { fontFamily: Fonts.regular, fontSize: 9, color: Colors.muted, backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
   cardRight: { alignItems: 'flex-end', gap: 3 },
-  days: { fontFamily: MONO, fontSize: 36, fontWeight: '700', color: Colors.violet, lineHeight: 36 },
-  daysUrgent: { color: Colors.red },
+  days: { fontFamily: MONO, fontSize: 36, fontWeight: '700', lineHeight: 36 },
   daysUnit: { fontFamily: Fonts.bold, fontSize: 8, color: Colors.muted, letterSpacing: 1.5 },
-  trackIcon: { fontSize: 14, color: Colors.violet, marginTop: 4 },
-  trackIconUrgent: { color: Colors.red },
+  trackIcon: { fontSize: 14, marginTop: 4 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40 },
   emptyIcon: { fontSize: 48, color: Colors.muted, marginBottom: 16 },
   emptyTitle: { fontFamily: Fonts.bold, fontSize: 18, color: Colors.white, marginBottom: 8, textAlign: 'center' },

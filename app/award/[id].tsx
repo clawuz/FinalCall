@@ -13,11 +13,13 @@ import { useAwardsStore } from '@/store/awardsStore';
 import { getCountdownDisplay } from '@/types';
 import { resolveAwardColor } from '@/constants/AwardColors';
 
-function formatDate(ts: Timestamp): string {
+function formatDate(ts: Timestamp | undefined | null): string {
+  if (!ts?.toDate) return '—';
   return ts.toDate().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 const MONO = Platform.select({ ios: 'Courier', android: 'monospace' }) ?? 'Courier';
+
 
 export default function AwardDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -66,15 +68,16 @@ export default function AwardDetailScreen() {
   }
 
   async function handleOpenWebsite() {
-    if (!award) return;
+    if (!award?.website) return;
     await WebBrowser.openBrowserAsync(award.website, {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
     });
   }
 
   async function handleApply() {
-    if (!award) return;
-    await WebBrowser.openBrowserAsync(award.applicationUrl, {
+    const url = award?.applicationUrl ?? award?.website;
+    if (!url) return;
+    await WebBrowser.openBrowserAsync(url, {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
     });
   }
@@ -139,6 +142,9 @@ export default function AwardDetailScreen() {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
           {/* Hero */}
           <View style={styles.hero}>
+            <Text style={[styles.heroWatermark, { color: colorDef.hex }]} numberOfLines={1} adjustsFontSizeToFit>
+              {award.name.toUpperCase()}
+            </Text>
             <Text style={styles.heroRegion}>
               {award.region === 'TR' ? '🇹🇷' : '🌍'} {award.country}
             </Text>
@@ -192,7 +198,9 @@ export default function AwardDetailScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>TARİHLER</Text>
             <View style={styles.infoCard}>
-              <InfoRow label="Başvuru Açılışı" value={formatDate(award.applicationOpenDate)} />
+              {award.applicationOpenDate && (
+                <InfoRow label="Başvuru Açılışı" value={formatDate(award.applicationOpenDate)} />
+              )}
               {award.earlyBirdDate && (
                 <InfoRow label="Erken Kayıt" value={formatDate(award.earlyBirdDate)} accent />
               )}
@@ -288,7 +296,17 @@ const styles = StyleSheet.create({
 
   scroll: { paddingHorizontal: Spacing.xl, paddingBottom: 40 },
 
-  hero: { paddingTop: Spacing.sm, paddingBottom: Spacing.xl },
+  hero: { paddingTop: Spacing.sm, paddingBottom: Spacing.xl, overflow: 'hidden' },
+  heroWatermark: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 12,
+    fontSize: 52,
+    fontFamily: Fonts.extraBold,
+    letterSpacing: -2,
+    opacity: 0.06,
+  },
   heroRegion: { fontFamily: Fonts.semiBold, fontSize: 11, color: Colors.muted, letterSpacing: 0.5, marginBottom: 8 },
   heroName: { fontFamily: Fonts.extraBold, fontSize: 32, color: Colors.white, letterSpacing: -1, lineHeight: 36, marginBottom: 4 },
   heroNameEn: { fontFamily: Fonts.regular, fontSize: 13, color: Colors.muted, fontStyle: 'italic' },

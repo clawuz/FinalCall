@@ -18,6 +18,11 @@
         "simulator": false
       }
     },
+    "preview-sim": {
+      "ios": {
+        "simulator": true
+      }
+    },
     "production": {
       "autoIncrement": true,
       "ios": {

@@ -11,6 +11,7 @@ import { Award, getCountdownDisplay } from '@/types';
 import AwardCard from '@/components/AwardCard';
 import ParticleBurst from '@/components/ParticleBurst';
 import { resolveAwardColor } from '@/constants/AwardColors';
+import { useNotificationsStore } from '@/store/notificationsStore';
 
 type FilterType = 'all' | 'TR' | 'Global' | 'tracking';
 
@@ -61,6 +62,7 @@ export default function AwardsScreen() {
   const getUrgentAwards = useAwardsStore((s) => s.getUrgentAwards);
 
   const [burstAwardId, setBurstAwardId] = React.useState<string | null>(null);
+  const unreadCount = useNotificationsStore((s) => s.unreadCount)();
 
   const handleTrackToggle = (id: string) => {
     if (!isTracking(id)) {
@@ -108,8 +110,13 @@ export default function AwardsScreen() {
                 <Text style={styles.urgentBadgeText}>{urgentCount}</Text>
               </View>
             )}
-            <TouchableOpacity style={styles.bellBtn}>
+            <TouchableOpacity style={styles.bellBtn} onPress={() => router.push('/notifications' as never)}>
               <Text style={styles.bellIcon}>🔔</Text>
+              {unreadCount > 0 && (
+                <View style={styles.bellBadge}>
+                  <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -244,6 +251,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   bellIcon: { fontSize: 14 },
+  bellBadge: {
+    position: 'absolute', top: -4, right: -4,
+    minWidth: 16, height: 16, borderRadius: 8,
+    backgroundColor: Colors.red, alignItems: 'center', justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  bellBadgeText: { fontFamily: Fonts.bold, fontSize: 9, color: Colors.white },
 
   greeting: { paddingHorizontal: Spacing.xl, paddingBottom: Spacing.md },
   greetingText: { fontFamily: Fonts.semiBold, fontSize: 16, color: Colors.dim },

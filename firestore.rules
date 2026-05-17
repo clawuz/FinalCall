@@ -13,6 +13,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Tips — herkese okuma
+    match /tips/{tipId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // User preferences — cihaz token bazlı
     match /user_prefs/{deviceToken} {
       allow read, write: if true; // Anonim, token bazlı

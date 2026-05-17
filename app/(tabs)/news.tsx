@@ -38,6 +38,7 @@ const PLACEHOLDER_ARTICLES: Article[] = [
 ];
 
 function timeAgo(ts: Timestamp): string {
+  if (!ts?.toMillis) return '';
   const hours = Math.floor((Date.now() - ts.toMillis()) / (1000 * 60 * 60));
   if (hours < 1) return 'Az önce';
   if (hours < 24) return `${hours} saat önce`;

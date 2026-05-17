@@ -8,6 +8,7 @@ import { Colors } from '@/constants/Colors';
 import { Fonts, Spacing, Radius } from '@/constants/Theme';
 import { useAwardsStore } from '@/store/awardsStore';
 import { getDaysLeft, getHoursLeft } from '@/types';
+import { resolveAwardColor } from '@/constants/AwardColors';
 
 type RegionFilter = 'all' | 'TR' | 'Global';
 
@@ -83,7 +84,8 @@ export default function ExploreScreen() {
                 const isUrgent = hoursLeft <= 24;
                 const displayValue = isUrgent ? String(hoursLeft).padStart(2, '0') : String(daysLeft);
                 const displayUnit = isUrgent ? 'SAAT' : 'GÜN';
-                const numColor = isUrgent ? Colors.red : Colors.amber;
+                const colorDef = resolveAwardColor(award.color);
+                const numColor = isUrgent ? Colors.red : colorDef.hex;
 
                 return (
                   <TouchableOpacity
