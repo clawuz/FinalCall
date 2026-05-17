@@ -2,15 +2,40 @@ import { Timestamp } from 'firebase/firestore';
 
 export type Region = 'TR' | 'Global';
 
+export interface NotifMilestone {
+  daysBeforeDeadline: number; // 30 | 14 | 7 | 3 | 1
+  sendHour: number;           // 0–23, Istanbul time
+  enabled: boolean;
+}
+
+export interface NotifSchedule {
+  milestones: NotifMilestone[];
+  lastWeekEnabled: boolean;
+  lastWeekIntervalHours: number; // e.g. 12
+}
+
+export const DEFAULT_NOTIF_SCHEDULE: NotifSchedule = {
+  milestones: [
+    { daysBeforeDeadline: 30, sendHour: 10, enabled: false },
+    { daysBeforeDeadline: 14, sendHour: 10, enabled: false },
+    { daysBeforeDeadline: 7,  sendHour: 9,  enabled: false },
+    { daysBeforeDeadline: 3,  sendHour: 9,  enabled: false },
+    { daysBeforeDeadline: 1,  sendHour: 9,  enabled: false },
+  ],
+  lastWeekEnabled: false,
+  lastWeekIntervalHours: 12,
+};
+
 export interface Award {
   id: string;
-  name: string;               // Türkçe isim (ör. "Kristal Elma")
+  name: string;
   nameEn?: string;
   region: Region;
-  country: string;            // "Türkiye", "USA", "UK" vb.
+  country: string;
   categories: string[];
   applicationOpenDate: Timestamp;
   deadlineDate: Timestamp;
+  postponedDeadlineDate?: Timestamp;
   earlyBirdDate?: Timestamp;
   applicationUrl: string;
   website: string;
@@ -18,9 +43,10 @@ export interface Award {
   fee?: string;
   logoUrl?: string;
   description?: string;
-  color?: string;   // AwardColorKey — resolved via resolveAwardColor()
+  color?: string;
   pastWinners?: string;
   isActive: boolean;
+  notifSchedule?: NotifSchedule; // undefined = no automated notifications
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -40,23 +66,24 @@ export interface Article {
 export interface UserPrefs {
   deviceToken: string;
   mutedAwards: string[];
-  quietStart: number;   // saat (0-23), varsayılan: 22
-  quietEnd: number;     // saat (0-23), varsayılan: 8
+  allNotifs: boolean;
+  countdownNotif: boolean; // milestone notifications (30d, 14d…)
+  lastDayNotif: boolean;   // last-week interval notifications
+  quietStart: number;
+  quietEnd: number;
   updatedAt: Timestamp;
 }
 
-// Urgency hesaplama için yardımcı
 export type UrgencyLevel = 'critical' | 'urgent' | 'warning' | 'normal';
 
 export function getUrgencyLevel(deadlineDate: Timestamp): UrgencyLevel {
   const now = Date.now();
   const deadline = deadlineDate.toMillis();
   const hoursLeft = (deadline - now) / (1000 * 60 * 60);
-
   if (hoursLeft <= 0) return 'critical';
   if (hoursLeft <= 24) return 'critical';
   if (hoursLeft <= 72) return 'urgent';
-  if (hoursLeft <= 168) return 'warning'; // 7 gün
+  if (hoursLeft <= 168) return 'warning';
   return 'normal';
 }
 
@@ -76,7 +103,6 @@ export function getCountdownDisplay(deadlineDate: Timestamp): { value: string; u
   const urgency = getUrgencyLevel(deadlineDate);
   const hoursLeft = getHoursLeft(deadlineDate);
   const daysLeft = getDaysLeft(deadlineDate);
-
   if (hoursLeft <= 24) {
     return { value: String(hoursLeft).padStart(2, '0'), unit: 'saat', urgency };
   }
