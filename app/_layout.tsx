@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { usePrefsStore } from '@/store/prefsStore';
 import { Platform } from 'react-native';
 import SplashAnimation from '@/components/SplashAnimation';
+import { configureNotificationHandler, setupNotificationTapHandler } from '@/services/notifications';
 
 if (Platform.OS !== 'web') {
   require('@/services/backgroundFetch');
@@ -23,6 +24,13 @@ export default function RootLayout() {
   const [animDone, setAnimDone] = useState(false);
   const hasOnboarded = usePrefsStore((s) => s.hasOnboarded);
   const router = useRouter();
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      configureNotificationHandler();
+      setupNotificationTapHandler();
+    }
+  }, []);
 
   // Hide native splash as soon as fonts are ready — custom animation takes over
   useEffect(() => {

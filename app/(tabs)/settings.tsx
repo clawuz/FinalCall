@@ -6,7 +6,6 @@ import {
 import { Colors } from '@/constants/Colors';
 import { Fonts, Spacing, Radius } from '@/constants/Theme';
 import { usePrefsStore } from '@/store/prefsStore';
-import { cancelAllNotifications } from '@/services/notifications';
 
 export default function SettingsScreen() {
   const allNotifs = usePrefsStore((s) => s.allNotifs);
@@ -22,17 +21,9 @@ export default function SettingsScreen() {
 
   function handleReset() {
     Alert.alert(
-      'Bildirimleri Sıfırla',
-      'Tüm planlanmış bildirimler iptal edilecek. Devam?',
-      [
-        { text: 'İptal', style: 'cancel' },
-        {
-          text: 'Sıfırla', style: 'destructive', onPress: async () => {
-            await cancelAllNotifications();
-            Alert.alert('Tamam', 'Tüm bildirimler iptal edildi.');
-          }
-        },
-      ]
+      'Bildirim Ayarları',
+      'Bildirimler sunucu tarafından yönetilmektedir. Bildirimleri tamamen kapatmak için yukarıdaki "Tüm Bildirimler" anahtarını kapat.',
+      [{ text: 'Tamam' }]
     );
   }
 
