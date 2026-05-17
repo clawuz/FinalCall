@@ -9,7 +9,7 @@ function checkAuth(req: any): boolean {
 }
 
 export const adminNotifications = onRequest(
-  { region: 'europe-west1', cors: true },
+  { region: 'europe-west1', cors: true, secrets: ['ADMIN_PASSWORD'] },
   async (req, res) => {
     if (!checkAuth(req)) {
       res.status(401).json({ error: 'Unauthorized' });
