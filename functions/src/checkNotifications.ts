@@ -4,63 +4,19 @@ import * as admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
 const db = admin.firestore();
-
-type NotifType =
-  | 'open'
-  | '30d'
-  | '14d'
-  | '7d'
-  | '3d'
-  | '1d'
-  | 'last_16h'
-  | 'last_12h'
-  | 'last_8h'
-  | 'last_4h';
-
-interface Milestone {
-  type: NotifType;
-  msBeforeDeadline: number;
-}
-
-const MILESTONES: Milestone[] = [
-  { type: '30d', msBeforeDeadline: 30 * 24 * 60 * 60 * 1000 },
-  { type: '14d', msBeforeDeadline: 14 * 24 * 60 * 60 * 1000 },
-  { type: '7d', msBeforeDeadline: 7 * 24 * 60 * 60 * 1000 },
-  { type: '3d', msBeforeDeadline: 3 * 24 * 60 * 60 * 1000 },
-  { type: '1d', msBeforeDeadline: 1 * 24 * 60 * 60 * 1000 },
-  { type: 'last_16h', msBeforeDeadline: 16 * 60 * 60 * 1000 },
-  { type: 'last_12h', msBeforeDeadline: 12 * 60 * 60 * 1000 },
-  { type: 'last_8h', msBeforeDeadline: 8 * 60 * 60 * 1000 },
-  { type: 'last_4h', msBeforeDeadline: 4 * 60 * 60 * 1000 },
-];
-
-function getNotifContent(type: NotifType, awardName: string): { title: string; body: string } {
-  switch (type) {
-    case 'open':
-      return { title: `${awardName} başvuruları açıldı! 🎯`, body: 'Başvuru süreci başladı. Hazırlanmak için zamanın var.' };
-    case '30d':
-      return { title: `${awardName} — 30 gün kaldı`, body: 'Başvuru için 30 günün var. Planlamaya başla.' };
-    case '14d':
-      return { title: `${awardName} — 14 gün kaldı`, body: 'Son 2 hafta! Çalışmalarını hazırla.' };
-    case '7d':
-      return { title: `${awardName} — Son 1 hafta!`, body: 'Başvuru için 7 günün kaldı. Geç kalma.' };
-    case '3d':
-      return { title: `${awardName} — 3 gün kaldı`, body: 'Son 3 gün! Başvurunu tamamla.' };
-    case '1d':
-      return { title: `${awardName} — Yarın son gün!`, body: 'Yarın başvuru kapanıyor. Son kontrolleri yap.' };
-    case 'last_16h':
-      return { title: `${awardName} — Bugün son gün`, body: '16 saat kaldı! Hemen başvur.' };
-    case 'last_12h':
-      return { title: `${awardName} — 12 saat kaldı`, body: 'Son 12 saat! Başvurunu tamamla.' };
-    case 'last_8h':
-      return { title: `${awardName} — 8 saat kaldı`, body: 'Yalnızca 8 saat kaldı. Acele et!' };
-    case 'last_4h':
-      return { title: `${awardName} — Son 4 saat!`, body: 'Başvuru kapanıyor. Son fırsat!' };
-  }
-}
-
-// Expo Push Notification Service endpoint
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
+
+interface NotifMilestone {
+  daysBeforeDeadline: number;
+  sendHour: number;
+  enabled: boolean;
+}
+
+interface NotifSchedule {
+  milestones: NotifMilestone[];
+  lastWeekEnabled: boolean;
+  lastWeekIntervalHours: number;
+}
 
 interface ExpoPushMessage {
   to: string;
@@ -71,8 +27,27 @@ interface ExpoPushMessage {
   badge?: number;
 }
 
-async function sendExpoPush(messages: ExpoPushMessage[]): Promise<void> {
-  // Expo accepts batches of up to 100
+interface PushMeta {
+  awardId: string;
+  notifType: string;
+  token: string;
+}
+
+/** Returns YYYY-MM-DD string for a unix timestamp */
+function toDateStr(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+function isInQuietHours(hour: number, quietStart: number, quietEnd: number): boolean {
+  if (quietStart > quietEnd) return hour >= quietStart || hour < quietEnd;
+  return hour >= quietStart && hour < quietEnd;
+}
+
+/** Send messages in batches of 100. Returns ticket IDs (null on failure). */
+async function sendExpoPush(
+  messages: ExpoPushMessage[],
+): Promise<Array<string | null>> {
+  const results: Array<string | null> = [];
   for (let i = 0; i < messages.length; i += 100) {
     const batch = messages.slice(i, i + 100);
     try {
@@ -85,17 +60,22 @@ async function sendExpoPush(messages: ExpoPushMessage[]): Promise<void> {
         },
         body: JSON.stringify(batch),
       });
-      const result = (await response.json()) as { data: Array<{ status: string; message?: string }> };
-      const failures = result.data.filter((r) => r.status === 'error');
-      if (failures.length > 0) {
-        logger.warn(`Expo push: ${failures.length} failed out of ${batch.length}`);
-      } else {
-        logger.info(`Expo push: ${batch.length} messages sent successfully`);
+      const result = (await response.json()) as {
+        data: Array<{ status: string; id?: string; message?: string }>;
+      };
+      for (let j = 0; j < batch.length; j++) {
+        const ticket = result.data[j];
+        results.push(ticket?.status === 'ok' && ticket.id ? ticket.id : null);
+        if (ticket?.status !== 'ok') {
+          logger.warn('Push ticket error:', ticket?.message);
+        }
       }
     } catch (error) {
       logger.error('Failed to send Expo push batch:', error);
+      batch.forEach(() => results.push(null));
     }
   }
+  return results;
 }
 
 export const checkNotifications = onSchedule(
@@ -106,136 +86,162 @@ export const checkNotifications = onSchedule(
   },
   async () => {
     const now = Date.now();
-    // 2-hour catch-up window: handles brief function downtime
-    const catchUpWindowMs = 2 * 60 * 60 * 1000;
+    const WINDOW_MS = 30 * 60 * 1000; // 30-min catch window (2 runs worth of slack)
+    const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-    // Load active awards
-    const awardsSnap = await db.collection('awards').where('isActive', '==', true).get();
-    if (awardsSnap.empty) {
-      logger.info('No active awards, skipping.');
+    const [awardsSnap, logSnap, prefsSnap] = await Promise.all([
+      db.collection('awards').where('isActive', '==', true).get(),
+      db.collection('notification_log').get(),
+      db.collection('user_prefs').get(),
+    ]);
+
+    if (awardsSnap.empty || prefsSnap.empty) {
+      logger.info('No active awards or tokens, skipping.');
       return;
     }
 
-    // Load already-sent notification log (keyed by `{awardId}_{type}`)
-    const logSnap = await db.collection('notification_log').get();
     const sentKeys = new Set(logSnap.docs.map((d) => d.id));
 
-    // Load registered device tokens
-    const prefsSnap = await db.collection('user_prefs').get();
-    if (prefsSnap.empty) {
-      logger.info('No registered tokens, skipping.');
-      return;
-    }
-
     // Current hour in Istanbul (UTC+3)
-    const nowDate = new Date(now);
-    const istanbulHour = (nowDate.getUTCHours() + 3) % 24;
+    const istanbulHour = (new Date(now).getUTCHours() + 3) % 24;
 
-    const allTokenDocs = prefsSnap.docs.map((d) => ({
-      token: d.id,
-      mutedAwards: (d.data().mutedAwards as string[]) ?? [],
-      allNotifs: (d.data().allNotifs as boolean) ?? true,
-      quietStart: (d.data().quietStart as number) ?? 22,
-      quietEnd: (d.data().quietEnd as number) ?? 8,
-    }));
+    const users = prefsSnap.docs
+      .map((d) => ({
+        token: d.id,
+        mutedAwards: (d.data().mutedAwards as string[]) ?? [],
+        allNotifs: (d.data().allNotifs as boolean) ?? true,
+        countdownNotif: (d.data().countdownNotif as boolean) ?? true,
+        lastDayNotif: (d.data().lastDayNotif as boolean) ?? true,
+        quietStart: (d.data().quietStart as number) ?? 22,
+        quietEnd: (d.data().quietEnd as number) ?? 8,
+      }))
+      .filter(
+        (u) =>
+          u.allNotifs &&
+          u.token.startsWith('ExponentPushToken[') &&
+          !isInQuietHours(istanbulHour, u.quietStart, u.quietEnd),
+      );
 
-    function isInQuietHours(quietStart: number, quietEnd: number, hour: number): boolean {
-      if (quietStart > quietEnd) {
-        // Wraps midnight: e.g. 22 → 8
-        return hour >= quietStart || hour < quietEnd;
-      }
-      return hour >= quietStart && hour < quietEnd;
-    }
-
-    // Only keep active tokens (Expo format) that are not in quiet hours
-    const activeTokenDocs = allTokenDocs.filter(
-      (t) =>
-        t.allNotifs &&
-        t.token.startsWith('ExponentPushToken[') &&
-        !isInQuietHours(t.quietStart, t.quietEnd, istanbulHour)
-    );
-
-    if (activeTokenDocs.length === 0) {
-      logger.info('No active tokens with notifications enabled.');
+    if (users.length === 0) {
+      logger.info('No active users in this window.');
       return;
     }
 
-    const batch = db.batch();
+    const logBatch = db.batch();
+    const messages: ExpoPushMessage[] = [];
+    const metas: PushMeta[] = [];
     let logCount = 0;
-    const pushMessages: ExpoPushMessage[] = [];
 
     for (const awardDoc of awardsSnap.docs) {
       const data = awardDoc.data();
       const awardId = awardDoc.id;
       const awardName = data.name as string;
-      const deadlineMs = (data.deadlineDate as Timestamp).toMillis();
+      const schedule = data.notifSchedule as NotifSchedule | undefined;
 
-      // Skip awards whose deadline has passed
-      if (deadlineMs <= now) continue;
+      // Skip awards with no configured schedule
+      if (!schedule) continue;
 
-      // Check applicationOpen notification
-      if (data.applicationOpenDate) {
-        const openMs = (data.applicationOpenDate as Timestamp).toMillis();
-        const logKey = `${awardId}_open`;
-        if (
-          openMs <= now &&
-          openMs >= now - catchUpWindowMs &&
-          !sentKeys.has(logKey)
-        ) {
-          const { title, body } = getNotifContent('open', awardName);
-          for (const t of activeTokenDocs) {
-            if (!t.mutedAwards.includes(awardId)) {
-              pushMessages.push({ to: t.token, title, body, data: { awardId, type: 'open' }, sound: 'default', badge: 1 });
-            }
-          }
-          batch.set(db.collection('notification_log').doc(logKey), {
-            awardId, type: 'open', sentAt: Timestamp.now(),
-          });
-          logCount++;
+      // Use postponed deadline when available
+      const effectiveDeadline = data.postponedDeadlineDate
+        ? (data.postponedDeadlineDate as Timestamp).toMillis()
+        : (data.deadlineDate as Timestamp).toMillis();
+
+      if (effectiveDeadline <= now) continue;
+
+      const deadlineDateStr = toDateStr(effectiveDeadline);
+      const msUntilDeadline = effectiveDeadline - now;
+
+      // ── Milestone notifications ──────────────────────────────────
+      for (const ms of schedule.milestones) {
+        if (!ms.enabled) continue;
+
+        const logKey = `${awardId}_${ms.daysBeforeDeadline}d_${deadlineDateStr}`;
+        if (sentKeys.has(logKey)) continue;
+
+        // Compute the target fire time: N days before deadline, at sendHour Istanbul
+        const targetDay = new Date(effectiveDeadline);
+        targetDay.setDate(targetDay.getDate() - ms.daysBeforeDeadline);
+        // Convert Istanbul hour to UTC (Istanbul = UTC+3)
+        targetDay.setUTCHours((ms.sendHour - 3 + 24) % 24, 0, 0, 0);
+        const sendTargetMs = targetDay.getTime();
+
+        if (now < sendTargetMs || now >= sendTargetMs + WINDOW_MS) continue;
+
+        const daysLabel = ms.daysBeforeDeadline;
+        const title = daysLabel === 1
+          ? `${awardName} — Yarın son gün!`
+          : `${awardName} — ${daysLabel} gün kaldı`;
+        const body = daysLabel === 1
+          ? 'Yarın başvuru kapanıyor. Son kontrolleri yap.'
+          : `Başvuru için ${daysLabel} günün var. Geç kalma.`;
+
+        for (const u of users) {
+          if (!u.countdownNotif || u.mutedAwards.includes(awardId)) continue;
+          messages.push({ to: u.token, title, body, data: { awardId, type: `${daysLabel}d` }, sound: 'default', badge: 1 });
+          metas.push({ awardId, notifType: `${daysLabel}d_${deadlineDateStr}`, token: u.token });
         }
+
+        logBatch.set(db.collection('notification_log').doc(logKey), {
+          awardId, type: `${ms.daysBeforeDeadline}d`, deadlineDateStr, sentAt: Timestamp.now(),
+        });
+        sentKeys.add(logKey);
+        logCount++;
       }
 
-      // Check milestone notifications
-      for (const milestone of MILESTONES) {
-        const milestoneMs = deadlineMs - milestone.msBeforeDeadline;
-        const logKey = `${awardId}_${milestone.type}`;
+      // ── Last-week interval notifications ─────────────────────────
+      if (schedule.lastWeekEnabled && msUntilDeadline <= ONE_WEEK_MS) {
+        const intervalMs = schedule.lastWeekIntervalHours * 60 * 60 * 1000;
+        const bucketIndex = Math.floor(msUntilDeadline / intervalMs);
+        const logKey = `${awardId}_lastWeek_${bucketIndex}`;
 
-        if (
-          milestoneMs <= now &&
-          milestoneMs >= now - catchUpWindowMs &&
-          !sentKeys.has(logKey)
-        ) {
-          const { title, body } = getNotifContent(milestone.type, awardName);
-          for (const t of activeTokenDocs) {
-            if (!t.mutedAwards.includes(awardId)) {
-              pushMessages.push({
-                to: t.token,
-                title,
-                body,
-                data: { awardId, type: milestone.type },
-                sound: 'default',
-                badge: 1,
-              });
-            }
+        if (!sentKeys.has(logKey)) {
+          const hoursLeft = Math.round(msUntilDeadline / (60 * 60 * 1000));
+          const daysLeft = Math.ceil(msUntilDeadline / (24 * 60 * 60 * 1000));
+          const title = hoursLeft <= 24
+            ? `🚨 ${awardName} — Bugün son gün!`
+            : `⏰ ${awardName} — Son ${daysLeft} gün`;
+          const body = `${hoursLeft} saat kaldı. Başvurmayı unutma!`;
+
+          for (const u of users) {
+            if (!u.lastDayNotif || u.mutedAwards.includes(awardId)) continue;
+            messages.push({ to: u.token, title, body, data: { awardId, type: 'lastWeek' }, sound: 'default', badge: 1 });
+            metas.push({ awardId, notifType: `lastWeek_${bucketIndex}`, token: u.token });
           }
-          batch.set(db.collection('notification_log').doc(logKey), {
-            awardId, type: milestone.type, sentAt: Timestamp.now(),
+
+          logBatch.set(db.collection('notification_log').doc(logKey), {
+            awardId, type: 'lastWeek', bucketIndex, sentAt: Timestamp.now(),
           });
+          sentKeys.add(logKey);
           logCount++;
         }
       }
     }
 
-    if (pushMessages.length > 0) {
-      logger.info(`Sending ${pushMessages.length} push messages for ${logCount} milestone(s)`);
-      await sendExpoPush(pushMessages);
-    }
-
-    if (logCount > 0) {
-      await batch.commit();
-      logger.info(`Logged ${logCount} notification(s) to notification_log`);
-    } else {
+    if (messages.length === 0) {
       logger.info('No notifications due in this run.');
+      return;
     }
-  }
+
+    logger.info(`Sending ${messages.length} push messages for ${logCount} milestone(s)`);
+    const ticketIds = await sendExpoPush(messages);
+
+    // Write push_receipts for delivery tracking
+    const receiptBatch = db.batch();
+    for (let i = 0; i < ticketIds.length; i++) {
+      const ticketId = ticketIds[i];
+      if (!ticketId) continue;
+      const ref = db.collection('push_receipts').doc();
+      receiptBatch.set(ref, {
+        ticketId,
+        token: metas[i].token,
+        awardId: metas[i].awardId,
+        notifType: metas[i].notifType,
+        sentAt: Timestamp.now(),
+        status: 'pending',
+      });
+    }
+
+    await Promise.all([logBatch.commit(), receiptBatch.commit()]);
+    logger.info(`Logged ${logCount} notification(s), ${ticketIds.filter(Boolean).length} receipts written`);
+  },
 );
