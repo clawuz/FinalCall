@@ -1,0 +1,58 @@
+name: EAS Build & Distribute
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'services/**'
+      - 'store/**'
+      - 'assets/all/**'
+      - 'constants/**'
+      - 'types/**'
+      - 'app.json'
+      - 'package.json'
+      - 'eas.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build iOS + Android (preview)
+        run: eas build --platform all --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Distribute iOS to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_IOS }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: testers
+          releaseNotes: "Auto build from commit ${{ github.sha }}"
+          file: ${{ steps.build.outputs.ios-artifact-path }}
+
+      - name: Distribute Android to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_ANDROID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: testers
+          releaseNotes: "Auto build from commit ${{ github.sha }}"
+          file: ${{ steps.build.outputs.android-artifact-path }}
