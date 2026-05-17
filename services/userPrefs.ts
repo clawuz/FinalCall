@@ -23,6 +23,8 @@ export async function updateUserNotifSettings(
   token: string,
   settings: {
     allNotifs?: boolean;
+    countdownNotif?: boolean;
+    lastDayNotif?: boolean;
     quietStart?: number;
     quietEnd?: number;
   }

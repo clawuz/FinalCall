@@ -52,8 +52,16 @@ export const usePrefsStore = create<PrefsState>()(
         if (token) updateUserNotifSettings(token, { allNotifs: v });
       },
       setOpenNotif: (v) => set({ openNotif: v }),
-      setCountdownNotif: (v) => set({ countdownNotif: v }),
-      setLastDayNotif: (v) => set({ lastDayNotif: v }),
+      setCountdownNotif: (v) => {
+        set({ countdownNotif: v });
+        const token = get().pushToken;
+        if (token) updateUserNotifSettings(token, { countdownNotif: v });
+      },
+      setLastDayNotif: (v) => {
+        set({ lastDayNotif: v });
+        const token = get().pushToken;
+        if (token) updateUserNotifSettings(token, { lastDayNotif: v });
+      },
     }),
     {
       name: 'notifawards-prefs',
