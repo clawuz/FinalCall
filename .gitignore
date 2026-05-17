@@ -43,3 +43,9 @@ serviceAccount.json
 # generated native folders
 /ios
 /android
+
+# Firebase local cache
+.firebase/
+
+# Superpowers brainstorm cache
+.superpowers/

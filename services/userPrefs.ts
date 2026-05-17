@@ -8,6 +8,8 @@ export async function registerPushToken(token: string): Promise<void> {
       {
         mutedAwards: [],
         allNotifs: true,
+        countdownNotif: true,
+        lastDayNotif: true,
         quietStart: 22,
         quietEnd: 8,
         updatedAt: serverTimestamp(),
