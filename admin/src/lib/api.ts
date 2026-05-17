@@ -1,3 +1,6 @@
+import type { NotifSchedule } from '../../../types';
+export type { NotifSchedule };
+
 const BASE = import.meta.env.VITE_FUNCTIONS_BASE_URL as string;
 const password = import.meta.env.VITE_ADMIN_PASSWORD as string;
 
@@ -48,8 +51,31 @@ export const sendNotification = (data: {
 }) => request<{ sent: number; total: number }>('adminNotifications', 'POST', data);
 
 // Stats
-export const getStats = () =>
-  request<{ totalDevices: number; notifEnabled: number; recentLogs: unknown[] }>('adminStats');
+export interface DeliverySummary {
+  total: number;
+  delivered: number;
+  failed: number;
+  pending: number;
+}
+
+export interface StatsData {
+  totalDevices: number;
+  notifEnabled: number;
+  deliverySummary: DeliverySummary;
+  byAward: Record<string, { sent: number; delivered: number; failed: number }>;
+  recentLog: Array<{ id: string; awardId: string; type: string; sentAt: unknown }>;
+  recentReceipts: Array<{
+    id: string;
+    token: string;
+    awardId: string;
+    notifType: string;
+    sentAt: unknown;
+    status: 'pending' | 'delivered' | 'failed';
+    errorDetails?: string;
+  }>;
+}
+
+export const getStats = () => request<StatsData>('adminStats');
 
 // Shared types
 export interface Award {
@@ -64,6 +90,7 @@ export interface Award {
   isActive: boolean;
   entryFee?: string;
   categories?: string[];
+  notifSchedule?: NotifSchedule;
   previousWinners?: {
     title: string;
     description: string;

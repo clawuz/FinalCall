@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Award } from '../lib/api';
 import PreviousWinnersEditor from './PreviousWinnersEditor';
+import NotifScheduleEditor from './NotifScheduleEditor';
+import { DEFAULT_NOTIF_SCHEDULE } from '../../../types';
+import type { NotifSchedule } from '../../../types';
 
 const COLOR_OPTIONS = [
   { value: 'amber',  hex: '#f59e0b' },
@@ -33,6 +36,9 @@ export default function AwardForm({ initial, onSave, onCancel }: Props) {
     isActive: true,
     ...initial,
   });
+  const [notifSchedule, setNotifSchedule] = useState<NotifSchedule>(
+    initial?.notifSchedule ?? DEFAULT_NOTIF_SCHEDULE
+  );
   const [saving, setSaving] = useState(false);
 
   function set(field: keyof Award, value: unknown) {
@@ -43,7 +49,7 @@ export default function AwardForm({ initial, onSave, onCancel }: Props) {
     e.preventDefault();
     if (!form.name || !form.deadlineDate) return;
     setSaving(true);
-    try { await onSave(form); } finally { setSaving(false); }
+    try { await onSave({ ...form, notifSchedule }); } finally { setSaving(false); }
   }
 
   return (
@@ -112,6 +118,8 @@ export default function AwardForm({ initial, onSave, onCancel }: Props) {
       </div>
 
       <PreviousWinnersEditor value={form.previousWinners} onChange={(v) => set('previousWinners', v)} />
+
+      <NotifScheduleEditor value={notifSchedule} onChange={setNotifSchedule} />
 
       <div className="field">
         <label>
