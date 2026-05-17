@@ -5,14 +5,14 @@
     "scheme": "notifawards",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/icon-ios-1024.png",
+    "icon": "./assets/all/icons/icon-1024.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "splash": {
-      "image": "./assets/splash/splash-iphone-1170x2532.png",
+      "image": "./assets/all/splash/splash-iphone-1290x2796.png",
       "resizeMode": "cover",
-      "backgroundColor": "#0A0203"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": false,
@@ -34,8 +34,8 @@
     "android": {
       "package": "com.notifawards.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/icon-android-432.png",
-        "backgroundColor": "#0A0203"
+        "foregroundImage": "./assets/all/icons/icon-432.png",
+        "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -53,7 +53,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/icons/icon-android-192.png",
+          "icon": "./assets/all/icons/icon-192.png",
           "color": "#B47AFF"
         }
       ],
