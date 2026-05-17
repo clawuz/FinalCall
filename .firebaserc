@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "notifawards-app"
-  }
+  },
+  "targets": {
+    "notifawards-app": {
+      "hosting": {
+        "admin": [
+          "notifawards-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Final Call — Splash (fullscreen)</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: #000; overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  #stage { position: fixed; inset: 0; }
+  #stage svg { display: block; width: 100%; height: 100%; }
+  /* tiny "press to replay" hint at the bottom */
+  .hint {
+    position: fixed; bottom: max(16px, env(safe-area-inset-bottom));
+    left: 0; right: 0; text-align: center;
+    font: 500 11px/1.4 -apple-system, system-ui, sans-serif;
+    color: rgba(167,139,250,0.45); letter-spacing: 1.5px; text-transform: uppercase;
+    pointer-events: none;
+    opacity: 0; transition: opacity .4s;
+  }
+  body:hover .hint, body.touched .hint { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div class="hint">Tap to replay · Screen-record this view for MP4</div>
+
+<script>
+// ============================================================================
+// Inline animation engine — generates the splash SVG at any time t.
+// Same logic as the React splash but standalone, so this file can be opened
+// in any browser or recorded with QuickTime/Android screen-recorder to
+// produce an MP4 of the splash.
+// ============================================================================
+
+const BELL_DEFS = '<linearGradient id="bell" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff1b5"/><stop offset="18%" stop-color="#ffd84a"/><stop offset="55%" stop-color="#e6a912"/><stop offset="85%" stop-color="#9c6b06"/><stop offset="100%" stop-color="#5a3d03"/></linearGradient><radialGradient id="hl" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fffbe2" stop-opacity="0.85"/><stop offset="60%" stop-color="#fff1a8" stop-opacity="0.25"/><stop offset="100%" stop-color="#fff1a8" stop-opacity="0"/></radialGradient><radialGradient id="sh" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#3d2604" stop-opacity="0.55"/><stop offset="60%" stop-color="#3d2604" stop-opacity="0.18"/><stop offset="100%" stop-color="#3d2604" stop-opacity="0"/></radialGradient><linearGradient id="lip" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8b5e06"/><stop offset="30%" stop-color="#ffe87a"/><stop offset="60%" stop-color="#e6a912"/><stop offset="100%" stop-color="#5a3d03"/></linearGradient><linearGradient id="crown" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff1b5"/><stop offset="50%" stop-color="#e6a912"/><stop offset="100%" stop-color="#7a5208"/></linearGradient><radialGradient id="clap" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#fff6cf"/><stop offset="40%" stop-color="#e6a912"/><stop offset="100%" stop-color="#5a3d03"/></radialGradient><radialGradient id="shd" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#000" stop-opacity="0.55"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>';
+
+const BELL_BODY = '<ellipse cx="512" cy="870" rx="300" ry="36" fill="url(#shd)"/><path d="M 478 230 C 478 192, 496 174, 512 174 C 528 174, 546 192, 546 230 L 546 290 L 478 290 Z" fill="url(#crown)"/><ellipse cx="512" cy="216" rx="17" ry="11" fill="#2a1d04" opacity="0.85"/><ellipse cx="503" cy="208" rx="3" ry="6" fill="#fff6cf" opacity="0.85" transform="rotate(-20 503 208)"/><path d="M 484 290 C 320 340, 180 480, 320 540 C 340 600, 304 680, 286 716 L 738 716 C 720 680, 684 600, 704 540 C 844 480, 704 340, 540 290 Z" fill="url(#bell)"/><g transform="translate(386 510) rotate(-6)"><ellipse cx="0" cy="0" rx="38" ry="180" fill="url(#hl)"/></g><g transform="translate(640 530) rotate(8)"><ellipse cx="0" cy="0" rx="34" ry="160" fill="url(#sh)"/></g><path d="M 268 712 L 756 712 C 770 750, 778 780, 762 798 C 720 814, 600 824, 512 824 C 424 814, 304 814, 262 798 C 246 780, 254 750, 268 712 Z" fill="url(#lip)"/><path d="M 286 716 L 738 716 C 728 736, 716 748, 702 752 L 322 752 C 308 748, 296 736, 286 716 Z" fill="#3d2a05" opacity="0.55"/><circle cx="498" cy="188" r="4" fill="#fff" opacity="0.95"/>';
+
+const clapper = (s) => '<g transform="rotate(' + s + ' 512 808)"><path d="M 506 720 L 518 720 L 518 822 L 506 822 Z" fill="#6b4806"/><ellipse cx="512" cy="854" rx="40" ry="42" fill="url(#clap)"/><ellipse cx="500" cy="844" rx="11" ry="7" fill="#fff6cf" opacity="0.85"/></g>';
+
+function easeOutBack(t) { const c1 = 1.70158, c3 = c1+1; return 1 + c3*Math.pow(t-1,3) + c1*Math.pow(t-1,2); }
+function easeOutQuad(t) { return 1 - (1-t)*(1-t); }
+
+function splashAt(t, w, h) {
+  const bgO = Math.min(1, t/0.25);
+  let bScale = 0;
+  if (t >= 0.25) bScale = t > 0.95 ? 1 : easeOutBack((t-0.25)/0.7);
+  let ringR = 0, clapR = 0;
+  if (t >= 0.95) {
+    const tr = t - 0.95;
+    if (tr <= 1.8) {
+      const d = Math.max(0, 1 - tr/1.8);
+      ringR = Math.sin(tr*Math.PI*4.5)*12*d;
+      const trc = Math.max(0, tr-0.06);
+      const d2 = Math.max(0, 1 - trc/1.8);
+      clapR = Math.sin(trc*Math.PI*4.5)*18*d2;
+    }
+  }
+  const wmT = Math.max(0, Math.min(1, (t-1.0)/0.6));
+  const wmDy = (1 - wmT) * 14;
+  const pulses = [];
+  for (const ps of [0.95, 1.25, 1.6]) {
+    const pt = (t - ps) / 1.3;
+    if (pt >= 0 && pt <= 1) {
+      const e = easeOutQuad(pt);
+      pulses.push({ s: 0.5 + e*2.0, o: (1-e)*0.85 });
+    }
+  }
+  const cx = w/2;
+  const bs = Math.min(w * 0.7, h * 0.42);
+  const bcy = h * 0.38;
+  const titleY = bcy + bs*0.55 + h * 0.02;
+  const titleSize = Math.min(w * 0.105, h * 0.06);
+  const subSize = Math.max(w * 0.026, 10);
+  const footerSize = Math.max(w * 0.022, 9);
+  const pulseSvgs = pulses.map(p => {
+    const r = (bs/2) * p.s;
+    return '<g transform="translate(' + cx + ' ' + bcy + ')" opacity="' + p.o.toFixed(3) + '"><path d="M ' + (-r*0.78) + ' ' + (-r*0.55) + ' Q ' + (-r*0.98) + ' 0, ' + (-r*0.78) + ' ' + (r*0.55) + '" stroke="#fff2c2" stroke-width="' + Math.max(1.5, 4*p.s) + '" fill="none" stroke-linecap="round"/><path d="M ' + (r*0.78) + ' ' + (-r*0.55) + ' Q ' + (r*0.98) + ' 0, ' + (r*0.78) + ' ' + (r*0.55) + '" stroke="#fff2c2" stroke-width="' + Math.max(1.5, 4*p.s) + '" fill="none" stroke-linecap="round"/></g>';
+  }).join('');
+  const sc = (bScale * bs / 720).toFixed(4);
+  const bellT = 'translate(' + cx + ' ' + bcy + ') scale(' + sc + ') rotate(' + ringR.toFixed(2) + ') translate(-512 -534)';
+
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="xMidYMid slice">' +
+    '<defs>' +
+    '<radialGradient id="bgPurple" cx="18%" cy="12%" r="60%"><stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.42"/><stop offset="65%" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient>' +
+    '<radialGradient id="bgAmber" cx="88%" cy="78%" r="70%"><stop offset="0%" stop-color="#f59e0b" stop-opacity="0.32"/><stop offset="65%" stop-color="#f59e0b" stop-opacity="0"/></radialGradient>' +
+    '<radialGradient id="vignette" cx="50%" cy="50%" r="80%"><stop offset="45%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.55"/></radialGradient>' +
+    BELL_DEFS + '</defs>' +
+    '<rect width="' + w + '" height="' + h + '" fill="#000"/>' +
+    '<rect width="' + w + '" height="' + h + '" fill="url(#bgPurple)" opacity="' + bgO.toFixed(3) + '"/>' +
+    '<rect width="' + w + '" height="' + h + '" fill="url(#bgAmber)" opacity="' + bgO.toFixed(3) + '"/>' +
+    '<rect width="' + w + '" height="' + h + '" fill="url(#vignette)" opacity="' + bgO.toFixed(3) + '"/>' +
+    pulseSvgs +
+    '<g transform="' + bellT + '">' + BELL_BODY + clapper(clapR) + '</g>' +
+    '<text x="' + cx + '" y="' + (titleY + titleSize + wmDy) + '" font-family="-apple-system, system-ui, sans-serif" font-size="' + titleSize + '" font-weight="700" letter-spacing="-1" text-anchor="middle" opacity="' + wmT.toFixed(3) + '"><tspan fill="#ffffff">Final </tspan><tspan fill="#a78bfa">Call</tspan></text>' +
+    '<text x="' + cx + '" y="' + (titleY + titleSize + wmDy + subSize + h*0.025) + '" font-family="-apple-system, system-ui, sans-serif" font-size="' + subSize + '" font-weight="500" letter-spacing="' + (subSize*0.3).toFixed(2) + '" text-anchor="middle" fill="#a78bfa" opacity="' + (wmT*0.7).toFixed(3) + '">ÖDÜLÜNÜ KAÇIRMA</text>' +
+    '<text x="' + cx + '" y="' + (h*0.93) + '" font-family="-apple-system, system-ui, sans-serif" font-size="' + footerSize + '" font-weight="500" letter-spacing="' + (footerSize*0.2).toFixed(2) + '" text-anchor="middle" fill="#a89a82" opacity="' + (bgO*0.5).toFixed(3) + '">GLOBAL MARKETING AWARDS</text>' +
+    '</svg>';
+}
+
+// ============================================================================
+// Animation loop — locks to viewport size, loops every 3.5s with 0.5s hold.
+// ============================================================================
+const stage = document.getElementById('stage');
+const DURATION = 3.5;
+const PARAM_T = parseFloat(new URLSearchParams(location.search).get('t'));
+let startTs = null;
+let pausedAt = isFinite(PARAM_T) ? PARAM_T : null;
+
+function render(t) {
+  const w = stage.clientWidth || window.innerWidth;
+  const h = stage.clientHeight || window.innerHeight;
+  // freeze after 3s for the hold + give 0.5s before looping
+  const animT = Math.min(t, 3.0);
+  stage.innerHTML = splashAt(animT, w, h);
+}
+
+function tick(ts) {
+  if (pausedAt !== null) {
+    render(pausedAt);
+    return; // single static frame
+  }
+  if (startTs === null) startTs = ts;
+  const elapsed = (ts - startTs) / 1000;
+  const t = elapsed % DURATION;
+  render(t);
+  requestAnimationFrame(tick);
+}
+
+requestAnimationFrame(tick);
+
+// Tap anywhere to restart the loop
+document.addEventListener('click', () => {
+  document.body.classList.add('touched');
+  startTs = null;
+});
+
+// Re-render on resize
+window.addEventListener('resize', () => {
+  if (pausedAt !== null) render(pausedAt);
+});
+</script>
+</body>
+</html>

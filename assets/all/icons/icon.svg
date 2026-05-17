@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <radialGradient id="purple" cx="18%" cy="15%" r="70%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.55"></stop>
+      <stop offset="60%" stop-color="#8b5cf6" stop-opacity="0"></stop>
+    </radialGradient>
+    <radialGradient id="amber" cx="85%" cy="85%" r="70%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.40"></stop>
+      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0"></stop>
+    </radialGradient>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="75%">
+      <stop offset="55%" stop-color="#000" stop-opacity="0"></stop>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.55"></stop>
+    </radialGradient>
+    <radialGradient id="bellHalo" cx="50%" cy="55%" r="32%">
+      <stop offset="0%" stop-color="#f5c155" stop-opacity="0.28"></stop>
+      <stop offset="100%" stop-color="#f5c155" stop-opacity="0"></stop>
+    </radialGradient>
+
+    <linearGradient id="bell-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fdeec0"></stop>
+      <stop offset="20%" stop-color="#f0c873"></stop>
+      <stop offset="55%" stop-color="#c08a2e"></stop>
+      <stop offset="85%" stop-color="#6e4810"></stop>
+      <stop offset="100%" stop-color="#3a2604"></stop>
+    </linearGradient>
+    <linearGradient id="hl-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff8d8" stop-opacity="0.85"></stop>
+      <stop offset="100%" stop-color="#fde7a8" stop-opacity="0"></stop>
+    </linearGradient>
+    <linearGradient id="lip-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5e3e08"></stop>
+      <stop offset="32%" stop-color="#f4d480"></stop>
+      <stop offset="62%" stop-color="#c08a2e"></stop>
+      <stop offset="100%" stop-color="#3a2604"></stop>
+    </linearGradient>
+    <linearGradient id="crown-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fdeec0"></stop>
+      <stop offset="50%" stop-color="#c08a2e"></stop>
+      <stop offset="100%" stop-color="#5e3e08"></stop>
+    </linearGradient>
+    <radialGradient id="clapper-grad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#fde7a8"></stop>
+      <stop offset="40%" stop-color="#c08a2e"></stop>
+      <stop offset="100%" stop-color="#3a2604"></stop>
+    </radialGradient>
+    <radialGradient id="shadow-grad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.75"></stop>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+
+  
+  <rect width="1024" height="1024" fill="#000"></rect>
+
+  
+  <rect width="1024" height="1024" fill="url(#purple)"></rect>
+
+  
+  <rect width="1024" height="1024" fill="url(#amber)"></rect>
+
+  
+  <rect width="1024" height="1024" fill="url(#vignette)"></rect>
+
+  
+  <circle cx="512" cy="560" r="380" fill="url(#bellHalo)"></circle>
+
+  
+  <ellipse cx="512" cy="900" rx="280" ry="12" fill="#000" opacity="0.7"></ellipse>
+
+  
+  <g transform="translate(0 16) scale(0.94) translate(34 0)">
+    <g transform="translate(512 540) rotate(0) translate(-512 -540)">
+      <ellipse cx="512" cy="852" rx="290" ry="36" fill="url(#shadow-grad)"></ellipse>
+
+      
+      <g>
+        <path d="M 486 250&#xA;                 C 486 222, 498 210, 512 210&#xA;                 C 526 210, 538 222, 538 250&#xA;                 L 538 304&#xA;                 L 486 304 Z" fill="url(#crown-grad)"></path>
+        <ellipse cx="512" cy="232" rx="14" ry="9" fill="#3d2a05" opacity="0.55"></ellipse>
+        <path d="M 491 222&#xA;                 C 491 216, 497 213, 502 213&#xA;                 L 502 220&#xA;                 C 498 220, 495 224, 495 230 Z" fill="#fff6cf" opacity="0.9"></path>
+      </g>
+
+      
+      <path d="M 470 300&#xA;               C 470 348, 408 416, 364 528&#xA;               C 326 626, 304 700, 282 748&#xA;               L 742 748&#xA;               C 720 700, 698 626, 660 528&#xA;               C 616 416, 554 348, 554 300&#xA;               Z" fill="url(#bell-grad)"></path>
+
+      
+      <path d="M 418 360&#xA;               C 396 432, 372 552, 354 686&#xA;               C 366 676, 380 612, 400 518&#xA;               C 416 438, 436 386, 446 354 Z" fill="url(#hl-grad)"></path>
+
+      
+      <path d="M 610 360&#xA;               C 632 432, 656 552, 674 686&#xA;               C 662 676, 648 612, 628 518&#xA;               C 612 438, 592 386, 582 354 Z" fill="#5a3d03" opacity="0.4"></path>
+
+      
+      <path d="M 252 736&#xA;               L 772 736&#xA;               C 784 770, 786 792, 776 808&#xA;               C 736 822, 608 832, 512 832&#xA;               C 416 832, 288 822, 248 808&#xA;               C 238 792, 240 770, 252 736 Z" fill="url(#lip-grad)"></path>
+
+      
+      <path d="M 282 748&#xA;               L 742 748&#xA;               C 734 764, 726 774, 714 778&#xA;               L 310 778&#xA;               C 298 774, 290 764, 282 748 Z" fill="#3d2a05" opacity="0.6"></path>
+
+      
+      <path d="M 290 740&#xA;               C 350 736, 670 736, 734 740&#xA;               C 668 744, 360 744, 290 740 Z" fill="#fff6cf" opacity="0.55"></path>
+
+      
+      <g transform="translate(512 808) rotate(8) translate(-512 -808)">
+        <path d="M 504 750 L 520 750 L 518 820 L 506 820 Z" fill="#6b4806"></path>
+        <ellipse cx="512" cy="852" rx="38" ry="40" fill="url(#clapper-grad)"></ellipse>
+        <ellipse cx="500" cy="842" rx="10" ry="7" fill="#fff6cf" opacity="0.85"></ellipse>
+      </g>
+
+      
+      <circle cx="502" cy="222" r="4" fill="#fff" opacity="0.95"></circle>
+    </g>
+  </g>
+
+  
+  <rect x="40" y="40" width="944" height="944" rx="218" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0.22"></rect>
+</svg>
